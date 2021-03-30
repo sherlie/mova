@@ -4,4 +4,4 @@ EXPOSE 9000 9001
 
 WORKDIR /app
 
-CMD ["node", "dist/index.js"]
+CMD ["npm", "run", "dev"]

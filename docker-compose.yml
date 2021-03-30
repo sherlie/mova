@@ -10,7 +10,6 @@ services:
       - APP_PORT=9000
       - ENV_ID=dev
       - NODE_ENV=development
-    #network_mode: bridge
     volumes:
       - .:/app/
     depends_on:
@@ -26,8 +25,19 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: mova
     restart: always
-    #network_mode: bridge
     volumes:
       - mova-db:/var/lib/mysql
+  mova-client:
+    build: ./client
+    command: npm run start
+    ports:
+      - 9005:3000
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    restart: always
+    volumes:
+      - ./client:/app
+    depends_on:
+      - mova-api
 volumes:
   mova-db:

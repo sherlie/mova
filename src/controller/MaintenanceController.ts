@@ -9,6 +9,10 @@ export class MaintenanceController implements Controller {
     register(app: App): void {
         const router = new KoaRouter<any, AppContext>({ prefix: '/api/maint' });
 
+        router.get('/test', (ctx: ExtendableContext) => {
+            ctx.body = JSON.stringify('ok');
+        });
+
         router.get(
             '/gen-langs',
             async (ctx: AppContext & ExtendableContext) => {

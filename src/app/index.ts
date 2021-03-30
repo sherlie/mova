@@ -1,5 +1,6 @@
 import Koa from 'koa';
 import Knex from 'knex';
+import cors from '@koa/cors';
 import { Controller } from '@controller/Controller';
 import { Session } from '@controller/Session';
 import { Identifiers } from '@app/identifiers';
@@ -12,6 +13,8 @@ export interface AppContext {
 export type App = Koa<Koa.DefaultState, AppContext>;
 
 const app: App = new Koa();
+
+app.use(cors());
 
 export async function run(port: number): Promise<void> {
     const database = container.get<Knex>(Identifiers.Database);

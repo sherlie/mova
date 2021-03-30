@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@koa/cors": "2.2.3",
     "apollo-server-koa": "2.22.1",
     "dataloader": "2.0.0",
     "graphql": "15.5.0",
