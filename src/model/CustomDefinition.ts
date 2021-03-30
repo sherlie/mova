@@ -41,4 +41,3 @@ export interface TableRow {
     row: number;
     col: number;
 }
-

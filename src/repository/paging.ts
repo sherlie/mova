@@ -20,7 +20,7 @@ export async function page<T>(
         .then();
 
     return {
-        items: items.slice(0, items.length - 1),
+        items: items.slice(0, limit),
         hasMore: items.length > limit,
     };
 }

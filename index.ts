@@ -15,5 +15,4 @@ const port = Number(process.env.APP_PORT);
 
 (async () => {
     await run(port);
-    console.log(`Listening on port ${port}...`);
 })();

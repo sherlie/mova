@@ -8,7 +8,7 @@
 			"type": "node",
 			"request": "attach",
 			"name": "Debug (docker-compose up)",
-			"port": 56800,
+			"port": 9001,
 			"restart": true,
 			"protocol": "inspector",
 			"localRoot": "${workspaceRoot}",

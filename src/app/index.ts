@@ -3,7 +3,7 @@ import Knex from 'knex';
 import { Controller } from '@controller/Controller';
 import { Session } from '@controller/Session';
 import { Identifiers } from '@app/identifiers';
-import { container } from '@app/container';
+import { container, SessionFactory } from '@app/container';
 
 export interface AppContext {
     session: Session;
@@ -16,6 +16,15 @@ const app: App = new Koa();
 export async function run(port: number): Promise<void> {
     const database = container.get<Knex>(Identifiers.Database);
     await database.migrate.up();
+    console.log('Database migrated');
+
+    const sessionFactory = container.get<SessionFactory>(
+        Identifiers.SessionFactory,
+    );
+    app.use(async (ctx: AppContext, next: Koa.Next) => {
+        ctx.session = sessionFactory();
+        await next();
+    });
 
     for (const controller of container.getAll<Controller>(
         Identifiers.Controller,

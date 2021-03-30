@@ -3,7 +3,7 @@ import * as Knex from 'knex';
 export async function up(knex: Knex): Promise<void> {
     await knex.schema.createTable('langs', (table: Knex.TableBuilder) => {
         table.uuid('id').primary();
-        table.string('text').notNullable();
+        table.string('name').notNullable();
         table.dateTime('add_time').notNullable().defaultTo(knex.fn.now());
     });
 

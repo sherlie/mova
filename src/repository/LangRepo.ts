@@ -32,9 +32,6 @@ export class LangRepo {
     }
 
     async create(langRow: InsertLangRow): Promise<LangRow> {
-        const [createdRow] = await this.database(TABLE)
-            .insert<LangRow>(langRow)
-            .returning('*');
-        return createdRow;
+        return await this.database(TABLE).insert<LangRow>(langRow);
     }
 }
