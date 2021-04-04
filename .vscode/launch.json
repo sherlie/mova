@@ -13,10 +13,10 @@
 			"protocol": "inspector",
 			"localRoot": "${workspaceRoot}",
 			"remoteRoot": "/app",
-			"skipFiles": ["<node_internals>/**", "node_modules/**"],
+			"skipFiles": ["<node_internals>/**/*.js"],
 			"sourceMapPathOverrides": {
-			  "/app/src/*": "${workspaceRoot}/src/*"
+				"/app/src/*": "${workspaceRoot}/src/*"
 			}
-		}
+		},
 	]
 }

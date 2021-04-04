@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev index.ts --inspect=0.0.0.0:56800",
+    "dev": "ts-node-dev --inspect=0.0.0.0:9001 index.ts",
     "test": "jest --config test/jest.config.js",
     "lint": "eslint . --ext .ts src",
     "format": "prettier --config .prettierrc 'src/**/*.ts' --write"
