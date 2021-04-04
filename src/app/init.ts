@@ -12,29 +12,28 @@ export interface AppContext {
 
 export type App = Koa<Koa.DefaultState, AppContext>;
 
-const app: App = new Koa();
+export async function init(port: number): Promise<void> {
+    console.log('Initializing...');
 
-app.use(cors());
+    const app: App = new Koa();
 
-export async function run(port: number): Promise<void> {
+    app.use(cors());
+
     const database = container.get<Knex>(Identifiers.Database);
     await database.migrate.up();
     console.log('Database migrated');
 
-    const sessionFactory = container.get<SessionFactory>(
-        Identifiers.SessionFactory,
-    );
+    const sessionFactory = container.get<SessionFactory>(Identifiers.SessionFactory);
     app.use(async (ctx: AppContext, next: Koa.Next) => {
         ctx.session = sessionFactory();
         await next();
     });
 
-    for (const controller of container.getAll<Controller>(
-        Identifiers.Controller,
-    )) {
+    for (const controller of container.getAll<Controller>(Identifiers.Controller)) {
         controller.register(app);
-        console.log(`Registered ${controller.constructor.name}`);
+        console.log(`Controller ${controller.constructor.name} registered`);
     }
+    console.log('App initialized');
 
     app.listen(port);
 }

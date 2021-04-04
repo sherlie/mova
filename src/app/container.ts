@@ -3,26 +3,37 @@ import * as inv from 'inversify';
 import Knex from 'knex';
 import { database } from '@repository/database';
 import { LangRepo } from '@repository/LangRepo';
+import { EntryRepo } from '@repository/EntryRepo';
+import { CustomDefRepo } from '@repository/CustomDefRepo';
 import { LangService, LangServiceImpl } from '@service/LangService';
 import { EntryService, EntryServiceImpl } from '@service/EntryService';
+import { CustomDefService, CustomDefServiceImpl } from '@service/CustomDefService';
 import { LangDataLoader } from '@controller/graphql/dataloaders/LangDataLoader';
 import { EntryDataLoader } from '@controller/graphql/dataloaders/EntryDataLoader';
 import { Session } from '@controller/Session';
 import { GraphQLController } from '@controller/graphql/GraphQLController';
 import { Identifiers as Ids } from '@app/identifiers';
 import { MaintenanceController } from '@controller/MaintenanceController';
+import { CustomDefFactory, CustomDefFactoryImpl } from '@service/CustomDefFactory';
+import { CustomValueFactory, CustomValueFactoryImpl } from '@service/CustomValueFactory';
 
 export const container = new inv.Container({
-    defaultScope: 'Request',
+    defaultScope: 'Singleton',
     skipBaseClassChecks: true,
 });
 
 container.bind<Knex>(Ids.Database).toConstantValue(database);
-container.bind<LangRepo>(Ids.LangRepo).to(LangRepo).inSingletonScope();
+container.bind<LangRepo>(Ids.LangRepo).to(LangRepo);
+container.bind<EntryRepo>(Ids.EntryRepo).to(EntryRepo);
+container.bind<CustomDefRepo>(Ids.CustomDefRepo).to(CustomDefRepo);
+
+container.bind<CustomDefFactory>(Ids.CustomDefFactory).to(CustomDefFactoryImpl);
+container.bind<CustomValueFactory>(Ids.CustomValueFactory).to(CustomValueFactoryImpl);
 
 container.bind<LangService>(Ids.LangService).to(LangServiceImpl);
-container.bind<LangDataLoader>(Ids.LangDataLoader).to(LangDataLoader);
 container.bind<EntryService>(Ids.EntryService).to(EntryServiceImpl);
+container.bind<CustomDefService>(Ids.CustomDefService).to(CustomDefServiceImpl);
+container.bind<LangDataLoader>(Ids.LangDataLoader).to(LangDataLoader);
 container.bind<EntryDataLoader>(Ids.EntryDataLoader).to(EntryDataLoader);
 
 export type SessionFactory = () => Session;
@@ -34,11 +45,5 @@ container
         containerContext.container.get<Session>(Ids.Session),
     );
 
-container
-    .bind<GraphQLController>(Ids.Controller)
-    .to(GraphQLController)
-    .inSingletonScope();
-container
-    .bind<MaintenanceController>(Ids.Controller)
-    .to(MaintenanceController)
-    .inSingletonScope();
+container.bind<GraphQLController>(Ids.Controller).to(GraphQLController);
+container.bind<MaintenanceController>(Ids.Controller).to(MaintenanceController);

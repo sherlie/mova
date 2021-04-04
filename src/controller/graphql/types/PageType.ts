@@ -3,18 +3,19 @@ import {
     GraphQLList,
     GraphQLNonNull,
     GraphQLObjectType,
+    GraphQLUnionType,
 } from 'graphql';
 import { Page } from '@repository/paging';
 
-export function getGraphQLPageType<T>(
+export function getPageType(
     name: string,
-    objectType: GraphQLObjectType<T>,
-): GraphQLObjectType<Page<T>> {
+    itemType: GraphQLObjectType | GraphQLUnionType,
+): GraphQLObjectType<Page<any>> {
     return new GraphQLObjectType({
         name,
         fields: () => ({
             items: {
-                type: GraphQLNonNull(GraphQLList(objectType)),
+                type: GraphQLNonNull(GraphQLList(GraphQLNonNull(itemType))),
             },
             hasMore: {
                 type: GraphQLNonNull(GraphQLBoolean),

@@ -9,10 +9,12 @@ moduleAlias.addAliases({
     '@util': `${__dirname}/src/util`,
 });
 
-import { run } from '@app/index';
+import { init } from '@app/init';
 
-const port = Number(process.env.APP_PORT);
+const run = async () => {
+    const port = Number(process.env.APP_PORT);
 
-(async () => {
-    await run(port);
-})();
+    await init(port);
+};
+
+run();

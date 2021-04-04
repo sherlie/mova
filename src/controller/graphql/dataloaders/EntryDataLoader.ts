@@ -13,10 +13,7 @@ export class EntryDataLoader extends DataLoader<EntryId, Entry> {
         super((entryIds) => this.batchLoad(entryIds));
     }
 
-    private async batchLoad(
-        entryIds: ReadonlyArray<EntryId>,
-    ): Promise<Entry[]> {
-        console.log(this.entryService, entryIds);
-        return [];
+    private async batchLoad(entryIds: ReadonlyArray<EntryId>): Promise<Entry[]> {
+        return await this.entryService.getByIds([...entryIds]);
     }
 }

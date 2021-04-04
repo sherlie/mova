@@ -1,4 +1,5 @@
 import { Flavor } from '@util/flavor';
+import { CustomId } from './CustomDef';
 import { CustomValue } from './CustomValue';
 import { LangId } from './Lang';
 
@@ -9,8 +10,8 @@ export interface Entry {
     original: string;
     translation: string;
     langId: LangId;
-    pos: PartOfSpeech;
-    custom?: CustomValue[];
+    partOfSpeech: PartOfSpeech;
+    customValues?: Map<CustomId, CustomValue>;
 }
 
 export enum PartOfSpeech {

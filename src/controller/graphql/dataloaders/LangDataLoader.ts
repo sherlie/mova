@@ -6,21 +6,16 @@ import { Lang, LangId } from '@model/Lang';
 
 @injectable()
 export class LangDataLoader extends DataLoader<LangId, Lang> {
-    constructor(
-        @inject(Identifiers.LangService) private langService: LangService,
-    ) {
+    constructor(@inject(Identifiers.LangService) private langService: LangService) {
         super((langIds) => this.batchLoad(langIds));
     }
 
-    private async batchLoad(
-        langIds: ReadonlyArray<LangId>,
-    ): Promise<(Lang | Error)[]> {
+    private async batchLoad(langIds: ReadonlyArray<LangId>): Promise<(Lang | Error)[]> {
         const langs = await this.langService.getByIds([...langIds]);
 
-        const langById = new Map(langs.map((lang) => [lang.id, lang]));
+        const langById = new Map<LangId, Lang>(langs.map((lang) => [lang.id, lang]));
         return langIds.map(
-            (langId) =>
-                langById.get(langId) || new Error(`Lang ${langId} not found`),
+            (langId) => langById.get(langId) || new Error(`Lang ${langId} not found`),
         );
     }
 }

@@ -2,7 +2,7 @@ import { ApolloServer } from 'apollo-server-koa';
 import { injectable } from 'inversify';
 import { Controller } from '@controller/Controller';
 import { schema } from '@controller/graphql/schema';
-import { App } from '@app/index';
+import { App } from '@app/init';
 
 @injectable()
 export class GraphQLController implements Controller {

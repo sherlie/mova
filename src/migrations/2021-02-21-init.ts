@@ -16,7 +16,7 @@ export async function up(knex: Knex): Promise<void> {
         table.json('custom');
         table.dateTime('add_time').notNullable().defaultTo(knex.fn.now());
 
-        table.foreign('lang_id').references('langs.id');
+        table.foreign('lang_id').references('langs.id').onDelete('cascade');
 
         table.index('pos');
     });
@@ -31,7 +31,7 @@ export async function up(knex: Knex): Promise<void> {
         table.json('props');
         table.dateTime('add_time').notNullable().defaultTo(knex.fn.now());
 
-        table.foreign('lang_id').references('langs.id');
+        table.foreign('lang_id').references('langs.id').onDelete('cascade');
 
         table.index(['lang_id', 'pos']);
     });
