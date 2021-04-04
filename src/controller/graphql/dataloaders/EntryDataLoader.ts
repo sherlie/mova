@@ -13,7 +13,12 @@ export class EntryDataLoader extends DataLoader<EntryId, Entry> {
         super((entryIds) => this.batchLoad(entryIds));
     }
 
-    private async batchLoad(entryIds: ReadonlyArray<EntryId>): Promise<Entry[]> {
-        return await this.entryService.getByIds([...entryIds]);
+    private async batchLoad(entryIds: ReadonlyArray<EntryId>): Promise<(Entry | Error)[]> {
+        const entries = await this.entryService.getByIds([...entryIds]);
+
+        const entryById = new Map<EntryId, Entry>(entries.map((entry) => [entry.id, entry]));
+        return entryIds.map(
+            (entryId) => entryById.get(entryId) || new Error(`Entry ${entryId} not found`),
+        );
     }
 }

@@ -4,6 +4,7 @@ import { LangService } from '@service/LangService';
 import { Identifiers } from '@app/identifiers';
 import { LangDataLoader } from './graphql/dataloaders/LangDataLoader';
 import { CustomDefService } from '@service/CustomDefService';
+import { EntryDataLoader } from './graphql/dataloaders/EntryDataLoader';
 
 @injectable()
 export class Session {
@@ -16,6 +17,9 @@ export class Session {
 
         @inject(Identifiers.EntryService)
         public entryService: EntryService,
+
+        @inject(Identifiers.EntryDataLoader)
+        public entryDataLoader: EntryDataLoader,
 
         @inject(Identifiers.CustomDefService)
         public customDefService: CustomDefService,

@@ -18,6 +18,6 @@ export const EntryQuery: GraphQLFieldConfig<Lang, AppContext, EntryQueryArgs> = 
         },
     },
     resolve: async (lang: Lang, args: EntryQueryArgs, ctx: AppContext): Promise<Maybe<Entry>> => {
-        return await ctx.session.entryService.getById(args.id);
+        return await ctx.session.entryDataLoader.load(args.id);
     },
 };
