@@ -27,7 +27,7 @@ export const EntryType = new GraphQLObjectType<Entry, AppContext>({
             resolve: (entry: Entry): CustomValue[] =>
                 entry.customValues ? Array.from(entry.customValues.values()) : [],
         },
-        definitions: EntryCustomDefsQuery,
+        customDefinitions: EntryCustomDefsQuery,
     },
 });
 
