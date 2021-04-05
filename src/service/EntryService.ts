@@ -25,9 +25,9 @@ export interface CreateEntry {
 
 export interface CreateCustomValue {
     text?: string;
-    option?: OptionId;
-    options?: OptionId[];
-    cells?: CreateCustomValueTableCell[];
+    singleOption?: OptionId;
+    multiOption?: OptionId[];
+    table?: CreateCustomValueTableCell[];
 }
 
 export interface CreateCustomValueTableCell {

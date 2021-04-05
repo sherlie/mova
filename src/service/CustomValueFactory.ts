@@ -61,17 +61,19 @@ export class CustomValueFactoryImpl implements CustomValueFactory {
         createCustomValue: CreateCustomValue,
         customDef: SingleOptionCustomDef,
     ): SingleOptionCustomValue {
-        if (!createCustomValue.option) {
+        if (!createCustomValue.singleOption) {
             throw new Error(ERR_OPTION_TYPE_NO_OPTION);
         }
 
-        if (!customDef.options.has(createCustomValue.option)) {
-            throw new Error(`${ERR_OPTION_TYPE_INVALID_OPTION}: [${createCustomValue.option}]`);
+        if (!customDef.options.has(createCustomValue.singleOption)) {
+            throw new Error(
+                `${ERR_OPTION_TYPE_INVALID_OPTION}: [${createCustomValue.singleOption}]`,
+            );
         }
 
         return {
             definition: customDef,
-            option: createCustomValue.option,
+            option: createCustomValue.singleOption,
         };
     }
 
@@ -79,11 +81,11 @@ export class CustomValueFactoryImpl implements CustomValueFactory {
         createCustomValue: CreateCustomValue,
         customDef: MultiOptionCustomDef,
     ): MultiOptionCustomValue {
-        if (!createCustomValue.options || !createCustomValue.options.length) {
+        if (!createCustomValue.multiOption || !createCustomValue.multiOption.length) {
             throw new Error(ERR_OPTION_TYPE_NO_OPTION);
         }
 
-        const invalidOptions = createCustomValue.options.filter(
+        const invalidOptions = createCustomValue.multiOption.filter(
             (option) => !customDef.options.has(option),
         );
         if (invalidOptions.length) {
@@ -96,7 +98,7 @@ export class CustomValueFactoryImpl implements CustomValueFactory {
 
         return {
             definition: customDef,
-            options: createCustomValue.options,
+            options: createCustomValue.multiOption,
         };
     }
 
@@ -104,11 +106,11 @@ export class CustomValueFactoryImpl implements CustomValueFactory {
         createCustomValue: CreateCustomValue,
         customDef: TableCustomDef,
     ): TableCustomValue {
-        if (!createCustomValue.cells || !createCustomValue.cells.length) {
+        if (!createCustomValue.table || !createCustomValue.table.length) {
             throw new Error(ERR_TABLE_TYPE_NO_CELLS);
         }
 
-        const invalidCells = createCustomValue.cells.filter(
+        const invalidCells = createCustomValue.table.filter(
             (cell) => !customDef.table.has(cell.id),
         );
         if (invalidCells.length) {
@@ -119,7 +121,7 @@ export class CustomValueFactoryImpl implements CustomValueFactory {
 
         return {
             definition: customDef,
-            cells: Object.fromEntries(createCustomValue.cells.map((cell) => [cell.id, cell.value])),
+            cells: Object.fromEntries(createCustomValue.table.map((cell) => [cell.id, cell.value])),
         };
     }
 }

@@ -21,22 +21,20 @@ interface CreateEntryMutationArgs {
         translation: string;
         langId: LangId;
         partOfSpeech: PartOfSpeech;
-        customValues?: [
-            {
-                id: CustomId;
-                text?: string;
-                option?: OptionId;
-                options?: OptionId[];
-                cells?: {
-                    id: TableCellId;
-                    value: string;
-                }[];
-            },
-        ];
+        customValues?: {
+            id: CustomId;
+            text?: string;
+            singleOption?: OptionId;
+            multiOption?: OptionId[];
+            table?: {
+                id: TableCellId;
+                value: string;
+            }[];
+        }[];
     };
 }
 
-const CreateEntryInput = new GraphQLInputObjectType({
+const CreateEntryInputType = new GraphQLInputObjectType({
     name: 'CreateEntryInput',
     fields: () => ({
         original: {
@@ -52,12 +50,12 @@ const CreateEntryInput = new GraphQLInputObjectType({
             type: GraphQLNonNull(PartOfSpeechEnumType),
         },
         customValues: {
-            type: GraphQLList(CreateEntryCustomValueInput),
+            type: GraphQLList(CreateEntryCustomValueInputType),
         },
     }),
 });
 
-const CreateEntryCustomValueInput = new GraphQLInputObjectType({
+const CreateEntryCustomValueInputType = new GraphQLInputObjectType({
     name: 'CreateEntryCustomValueInput',
     fields: () => ({
         id: {
@@ -66,19 +64,19 @@ const CreateEntryCustomValueInput = new GraphQLInputObjectType({
         text: {
             type: GraphQLString,
         },
-        option: {
+        singleOption: {
             type: GraphQLID,
         },
-        options: {
+        multiOption: {
             type: GraphQLList(GraphQLID),
         },
-        cells: {
-            type: GraphQLList(CreateEntryCustomValueTableCellInput),
+        table: {
+            type: GraphQLList(CreateEntryCustomValueTableCellInputType),
         },
     }),
 });
 
-const CreateEntryCustomValueTableCellInput = new GraphQLInputObjectType({
+const CreateEntryCustomValueTableCellInputType = new GraphQLInputObjectType({
     name: 'CreateEntryCustomValueTableCellInput',
     fields: {
         id: {
@@ -94,7 +92,7 @@ export const CreateEntryMutation: GraphQLFieldConfig<any, AppContext, CreateEntr
     type: getResultType('EntryResult', EntryType),
     args: {
         input: {
-            type: GraphQLNonNull(CreateEntryInput),
+            type: GraphQLNonNull(CreateEntryInputType),
         },
     },
     resolve: getResultResolver(
