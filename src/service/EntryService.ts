@@ -42,7 +42,7 @@ export interface EntryService {
 }
 
 const ERR_INVALID_CUSTOM_DEFS_FOR_ENTRY =
-    'Entry custom values definitions are not valid for the entry';
+    'Entry custom value definitions are not valid for the entry';
 
 @injectable()
 export class EntryServiceImpl implements EntryService {

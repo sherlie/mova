@@ -56,7 +56,7 @@ export class MaintenanceController implements Controller {
                 translation: 'sun',
                 langId: lang1.id,
                 partOfSpeech: PartOfSpeech.Noun,
-                customValues: new Map([[def1.id, { option: def1OptMasculine }]]),
+                customValues: new Map([[def1.id, { singleOption: def1OptMasculine }]]),
             });
 
             const def2OptMasculine = Array.from(
@@ -68,7 +68,7 @@ export class MaintenanceController implements Controller {
                 translation: 'car',
                 langId: lang2.id,
                 partOfSpeech: PartOfSpeech.Noun,
-                customValues: new Map([[def2.id, { option: def2OptMasculine }]]),
+                customValues: new Map([[def2.id, { singleOption: def2OptMasculine }]]),
             });
 
             const def4CellIch = Array.from((def4 as TableCustomDef).table.entries()).find(
@@ -88,7 +88,7 @@ export class MaintenanceController implements Controller {
                     [
                         def4.id,
                         {
-                            cells: [
+                            table: [
                                 { id: def4CellIch, value: 'sage' },
                                 { id: def4CellDu, value: 'sagst' },
                             ],
