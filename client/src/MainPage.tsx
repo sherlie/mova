@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 
 import EntryList from './EntryList'
 import { GET_LANGUAGES } from './queries';

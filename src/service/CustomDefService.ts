@@ -11,7 +11,7 @@ export interface CustomDefScope {
     partOfSpeech: PartOfSpeech;
 }
 
-export type CreateCustomDefintion = {
+export type CreateCustomDef = {
     name: string;
     type: CustomType;
     langId: LangId;
@@ -22,12 +22,9 @@ export type CreateCustomDefintion = {
 
 export interface CustomDefService {
     getAll(scope: CustomDefScope): Promise<CustomDef[]>;
-
     getByIds(customIds: CustomId[]): Promise<CustomDef[]>;
-
     getByIds(customIds: CustomId[]): Promise<CustomDef[]>;
-
-    create(createCustomDef: CreateCustomDefintion): Promise<CustomDef>;
+    create(createCustomDef: CreateCustomDef): Promise<CustomDef>;
 }
 
 @injectable()
@@ -45,7 +42,7 @@ export class CustomDefServiceImpl implements CustomDefService {
         return await this.customDefRepo.getByIds(customIds);
     }
 
-    async create(createCustomDef: CreateCustomDefintion): Promise<CustomDef> {
+    async create(createCustomDef: CreateCustomDef): Promise<CustomDef> {
         const customDef = this.customDefFactory.build(createCustomDef);
         await this.customDefRepo.create(customDef);
         return customDef;

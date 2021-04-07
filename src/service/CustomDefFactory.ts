@@ -11,11 +11,11 @@ import {
     TableCustomDef,
     TextCustomDef,
 } from '@model/CustomDef';
-import { CreateCustomDefintion } from './CustomDefService';
+import { CreateCustomDef } from './CustomDefService';
 import { injectable } from 'inversify';
 
 export interface CustomDefFactory {
-    build(createCustomDef: CreateCustomDefintion): CustomDef;
+    build(createCustomDef: CreateCustomDef): CustomDef;
 }
 
 const ERR_OPTION_TYPE_NO_OPTIONS = `Custom definition for types '${CustomType.SingleOption}' or '${CustomType.MultiOption}' must contain options`;
@@ -23,7 +23,7 @@ const ERR_TABLE_TYPE_NO_TABLE_CELLS = `Custom definition for type '${CustomType.
 
 @injectable()
 export class CustomDefFactoryImpl implements CustomDefFactory {
-    build(createCustomDef: CreateCustomDefintion): CustomDef {
+    build(createCustomDef: CreateCustomDef): CustomDef {
         switch (createCustomDef.type) {
             case CustomType.Text:
                 return this.buildText(createCustomDef);
@@ -35,7 +35,7 @@ export class CustomDefFactoryImpl implements CustomDefFactory {
         }
     }
 
-    private buildBase(createCustomDef: CreateCustomDefintion): BaseCustomDef {
+    private buildBase(createCustomDef: CreateCustomDef): BaseCustomDef {
         const { name, type, langId, partOfSpeech } = createCustomDef;
         return {
             id: uuidv4(),
@@ -46,7 +46,7 @@ export class CustomDefFactoryImpl implements CustomDefFactory {
         };
     }
 
-    private buildText(createCustomDef: CreateCustomDefintion): TextCustomDef {
+    private buildText(createCustomDef: CreateCustomDef): TextCustomDef {
         return {
             ...this.buildBase(createCustomDef),
             type: CustomType.Text,
@@ -54,7 +54,7 @@ export class CustomDefFactoryImpl implements CustomDefFactory {
     }
 
     private buildOption(
-        createCustomDef: CreateCustomDefintion,
+        createCustomDef: CreateCustomDef,
         type: CustomType.SingleOption | CustomType.MultiOption,
     ): SingleOptionCustomDef | MultiOptionCustomDef {
         const { options } = createCustomDef;
@@ -69,7 +69,7 @@ export class CustomDefFactoryImpl implements CustomDefFactory {
         };
     }
 
-    private buildTable(createCustomDef: CreateCustomDefintion): TableCustomDef {
+    private buildTable(createCustomDef: CreateCustomDef): TableCustomDef {
         const { table } = createCustomDef;
         if (!table || !table.length) {
             throw new Error(ERR_TABLE_TYPE_NO_TABLE_CELLS);
