@@ -1,20 +1,18 @@
-import React from 'react';
-import PropTypes from "prop-types";
+import React, { FC } from 'react';
 
-import Entry from './Entry'
+import EntryRow from './EntryRow'
+import { Entry } from './types';
 
-const EntryList = (data: any) => {
-  console.log(data)
+interface EntryListProps {
+  entries: Entry[];
+}
+
+const EntryList: FC<EntryListProps> = ({ entries }) => {
   return (
     <div>
-      {data.map((entry: any) => (<Entry  data={entry}/>))} 
-      
+      {entries.map((entry) => (<EntryRow key={entry.id} entry={entry} />))}
     </div>
   );
 }
-
-EntryList.propTypes = {
-  data: PropTypes.object.isRequired
-};
 
 export default EntryList;
