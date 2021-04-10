@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 
 import EntryRow from './EntryRow';
-import { Entry } from './types';
+import { Entry } from '../../types';
 
 interface EntryListProps {
   entries: Entry[];

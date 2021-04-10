@@ -2,7 +2,7 @@ import React from 'react';
 import { useQuery } from '@apollo/client';
 
 import EntryList from './EntryList';
-import { GET_LANGUAGES } from './queries';
+import { GET_LANGUAGES } from '../../queries';
 
 const MainPage = () => {
   const { loading, error, data } = useQuery(GET_LANGUAGES);

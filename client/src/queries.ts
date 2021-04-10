@@ -6,13 +6,6 @@ export const GET_LANGUAGES = gql`
       items {
         id
         name
-        entries {
-          items {
-            id
-            original
-            translation
-          }
-        }
       }
       hasMore
     }

@@ -3,3 +3,8 @@ export interface Entry {
   original: string;
   translation: string;
 }
+
+export interface Language {
+  id: string;
+  name: string;
+}

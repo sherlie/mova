@@ -2,8 +2,8 @@ import React from 'react';
 import { ApolloProvider } from '@apollo/client';
 
 import './App.css';
-import MainPage from './MainPage';
-import { client } from './api';
+import MainPage from './main/MainPage';
+import { client } from '../api';
 
 function App() {
   return (
