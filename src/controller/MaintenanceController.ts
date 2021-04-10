@@ -10,7 +10,7 @@ import { CustomType, SingleOptionCustomDef, TableCustomDef } from '@model/Custom
 @injectable()
 export class MaintenanceController implements Controller {
     register(app: App): void {
-        const router = new KoaRouter<any, AppContext>({ prefix: '/api/maint' });
+        const router = new KoaRouter<unknown, AppContext>({ prefix: '/api/maint' });
 
         router.get('/', async (ctx: AppContext & ExtendableContext) => {
             const { langService, customDefService, entryService } = ctx.session;

@@ -1,9 +1,8 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
 
-import EntryList from './EntryList'
+import EntryList from './EntryList';
 import { GET_LANGUAGES } from './queries';
-
 
 const MainPage = () => {
   const { loading, error, data } = useQuery(GET_LANGUAGES);
@@ -16,6 +15,6 @@ const MainPage = () => {
       <EntryList entries={data.languages.items[0].entries.items} />
     </div>
   );
-}
+};
 
 export default MainPage;

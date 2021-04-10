@@ -7,10 +7,10 @@ import {
 } from 'graphql';
 import { Page } from '@repository/paging';
 
-export function getPageType(
+export function getPageType<T>(
     name: string,
     itemType: GraphQLObjectType | GraphQLUnionType,
-): GraphQLObjectType<Page<any>> {
+): GraphQLObjectType<Page<T>> {
     return new GraphQLObjectType({
         name,
         fields: () => ({

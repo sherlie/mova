@@ -11,7 +11,7 @@ type LangsQueryArgs = {
     limit: number;
 };
 
-export const LangsQuery: GraphQLFieldConfig<any, AppContext, LangsQueryArgs> = {
+export const LangsQuery: GraphQLFieldConfig<unknown, AppContext, LangsQueryArgs> = {
     type: GraphQLNonNull(LangPageType),
     args: {
         start: {
@@ -23,7 +23,7 @@ export const LangsQuery: GraphQLFieldConfig<any, AppContext, LangsQueryArgs> = {
             defaultValue: DEFAULT_LIMIT,
         },
     },
-    resolve: async (_: any, args: LangsQueryArgs, ctx: AppContext): Promise<Page<Lang>> => {
+    resolve: async (_: unknown, args: LangsQueryArgs, ctx: AppContext): Promise<Page<Lang>> => {
         const { start, limit } = args;
         return await ctx.session.langService.getAll({ start, limit });
     },

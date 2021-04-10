@@ -95,6 +95,7 @@ export class EntryServiceImpl implements EntryService {
         const entryCustomMaps = new Map<EntryId, Map<CustomId, CustomValueWithoutDef>>(
             entries
                 .filter((entry) => entry.customValues)
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 .map((entry) => [entry.id, entry.customValues!]),
         );
         const customDefIds: CustomId[] = Array.from(entryCustomMaps.values()).flatMap((customMap) =>
@@ -124,6 +125,7 @@ export class EntryServiceImpl implements EntryService {
                 customId,
                 {
                     ...(customValue as TextCustomValue),
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     definition: customDefs.get(customId)!,
                 } as CustomValue,
             ]),

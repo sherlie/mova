@@ -19,7 +19,7 @@ const CreateLangInput = new GraphQLInputObjectType({
     },
 });
 
-export const CreateLangMutation: GraphQLFieldConfig<any, AppContext, CreateLangMutationArgs> = {
+export const CreateLangMutation: GraphQLFieldConfig<unknown, AppContext, CreateLangMutationArgs> = {
     type: getResultType('LanguageResult', LangType),
     args: {
         input: {
@@ -27,7 +27,7 @@ export const CreateLangMutation: GraphQLFieldConfig<any, AppContext, CreateLangM
         },
     },
     resolve: getResultResolver(
-        async (_: any, args: CreateLangMutationArgs, ctx: AppContext): Promise<Lang> => {
+        async (_: unknown, args: CreateLangMutationArgs, ctx: AppContext): Promise<Lang> => {
             return await ctx.session.langService.create(args.input);
         },
     ),

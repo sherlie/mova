@@ -44,13 +44,17 @@ export const TableCustomValueType: GraphQLObjectType<
                     definition: { table },
                 } = tableCustomValue;
 
-                return Object.entries<string>(cells)
-                    .sort(([id1], [id2]) => table.get(id1)!.index - table.get(id2)!.index)
-                    .map(([id, value]) => ({
-                        id,
-                        name: table.get(id)!.name,
-                        value,
-                    }));
+                return (
+                    Object.entries<string>(cells)
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        .sort(([id1], [id2]) => table.get(id1)!.index - table.get(id2)!.index)
+                        .map(([id, value]) => ({
+                            id,
+                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                            name: table.get(id)!.name,
+                            value,
+                        }))
+                );
             },
         },
     },

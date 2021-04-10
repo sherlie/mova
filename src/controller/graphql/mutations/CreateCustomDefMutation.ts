@@ -51,7 +51,7 @@ const CreateCustomDefInput = new GraphQLInputObjectType({
 });
 
 export const CreateCustomDefMutation: GraphQLFieldConfig<
-    any,
+    unknown,
     AppContext,
     CreateCustomDefMutationArgs
 > = {
@@ -62,7 +62,11 @@ export const CreateCustomDefMutation: GraphQLFieldConfig<
         },
     },
     resolve: getResultResolver(
-        async (_: any, args: CreateCustomDefMutationArgs, ctx: AppContext): Promise<CustomDef> => {
+        async (
+            _: unknown,
+            args: CreateCustomDefMutationArgs,
+            ctx: AppContext,
+        ): Promise<CustomDef> => {
             return await ctx.session.customDefService.create(args.input);
         },
     ),

@@ -69,11 +69,11 @@ export class CustomDefRepo {
         return {
             id: customDefRecord.id,
             langId: customDefRecord.lang_id,
-            partOfSpeech: customDefRecord.pos,
+            partOfSpeech: customDefRecord.pos as PartOfSpeech,
             name: customDefRecord.name,
-            type: customDefRecord.type,
+            type: customDefRecord.type as CustomType,
             ...this.deserializeProps(customDefRecord),
-        };
+        } as CustomDef;
     }
 
     private serializeProps(customDef: CustomDef): string | undefined {
@@ -84,7 +84,9 @@ export class CustomDefRepo {
         }
     }
 
-    private deserializeProps(customDefRecord: CustomDefRecord): any {
+    private deserializeProps(
+        customDefRecord: CustomDefRecord,
+    ): Record<string, unknown> | undefined {
         const { type, props } = customDefRecord;
         const deserializedProps = props && JSON.parse(props);
         if (type === CustomType.SingleOption || type === CustomType.MultiOption) {

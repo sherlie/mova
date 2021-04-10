@@ -88,6 +88,7 @@ export class EntryRepo {
         return JSON.stringify(
             Object.fromEntries(
                 Array.from(customValues.entries()).map(([customId, customValue]) => {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     const { definition, ...customValueProps } = customValue;
 
                     return [customId, customValueProps];

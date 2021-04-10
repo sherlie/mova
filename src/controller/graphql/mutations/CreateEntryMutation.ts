@@ -88,7 +88,11 @@ const CreateEntryCustomValueTableCellInputType = new GraphQLInputObjectType({
     },
 });
 
-export const CreateEntryMutation: GraphQLFieldConfig<any, AppContext, CreateEntryMutationArgs> = {
+export const CreateEntryMutation: GraphQLFieldConfig<
+    unknown,
+    AppContext,
+    CreateEntryMutationArgs
+> = {
     type: getResultType('EntryResult', EntryType),
     args: {
         input: {
@@ -96,7 +100,7 @@ export const CreateEntryMutation: GraphQLFieldConfig<any, AppContext, CreateEntr
         },
     },
     resolve: getResultResolver(
-        async (_: any, args: CreateEntryMutationArgs, ctx: AppContext): Promise<Entry> => {
+        async (_: unknown, args: CreateEntryMutationArgs, ctx: AppContext): Promise<Entry> => {
             const { input } = args;
             const customValues =
                 input.customValues &&
