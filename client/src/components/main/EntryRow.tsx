@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import { Entry } from '../../types';
+import { Entry } from '../../graphql/types';
 
 interface EntryProps {
   entry: Entry;

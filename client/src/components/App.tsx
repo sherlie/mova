@@ -1,18 +1,18 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { ApolloProvider } from '@apollo/client';
 
 import './App.css';
-import MainPage from './main/MainPage';
-import { client } from '../api';
+import { client } from '../graphql/client';
+import SettingsPage from './settings/SettingsPage';
 
-function App() {
+export const App: FC = () => {
   return (
     <ApolloProvider client={client}>
       <div className='App'>
-        <MainPage />
+        <SettingsPage />
       </div>
     </ApolloProvider>
   );
-}
+};
 
 export default App;

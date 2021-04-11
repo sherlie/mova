@@ -1,20 +1,7 @@
-import React from 'react';
-import { useQuery } from '@apollo/client';
+import React, { FC } from 'react';
 
-import EntryList from './EntryList';
-import { GET_LANGUAGES } from '../../queries';
-
-const MainPage = () => {
-  const { loading, error, data } = useQuery(GET_LANGUAGES);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
-
-  return (
-    <div>
-      <EntryList entries={data.languages.items[0].entries.items} />
-    </div>
-  );
+const MainPage: FC = () => {
+  return <div>MainPage</div>;
 };
 
 export default MainPage;
