@@ -7,7 +7,7 @@
     "dev": "ts-node-dev --inspect=0.0.0.0:9001 index.ts",
     "test": "jest --config test/jest.config.js",
     "lint": "eslint . --ext .ts src --color",
-    "format": "prettier --config .prettierrc 'src/**/*.ts' --write",
+    "format": "prettier --config .prettierrc --write \"src/**/*.ts\"",
     "postinstall": "husky install"
   },
   "author": "",
