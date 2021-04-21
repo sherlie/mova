@@ -1,7 +1,7 @@
 import React, { useState, FC } from 'react';
 
-import { GET_LANGUAGES } from '../../queries';
-import { Language, Page } from '../../types';
+import { GQL_GET_LANGUAGES } from '../../graphql/queries';
+import { Language, Page } from '../../graphql/types';
 
 interface PropetyDialogProps {
   selectedLang: Language | undefined;

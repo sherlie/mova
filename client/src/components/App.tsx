@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { ApolloProvider } from '@apollo/client';
 
 import './App.css';
-import { client } from '../api';
+import { client } from '../graphql/client';
+import { Language } from '../graphql/types';
 import LangSelectDialog from './LangSelectDialog';
-import { Language } from '../types';
-import Cookies from 'cookies-js';
-import AppSwitch from './AppSwitch';
 import Menu from './Menu';
+import AppSwitch from './AppSwitch';
+import Cookies from 'cookies-js';
 
 const COOKIE_SELECTED_LANG = 'selectedLang';
 

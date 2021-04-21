@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { Language } from '../types';
+import { Language } from '../graphql/types';
 
 import MainPage from './main/MainPage';
-import LanguagesPage from './settings/LanguagesPage';
+import LanguagesPage from './properties/PropertiesPage';
 
 interface AppSwitchProps {
   selectedLang: Language | undefined;

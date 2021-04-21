@@ -1,8 +1,8 @@
 import React, { useState, FC } from 'react';
 import { useQuery } from '@apollo/client';
 
-import { GET_LANGUAGES } from '../queries';
-import { Page, Language } from '../types';
+import { GQL_GET_LANGUAGES } from '../graphql/queries';
+import { Page, Language } from '../graphql/types';
 
 export interface GetLanguagesData {
   languages: Page<Language>;
@@ -19,7 +19,9 @@ const LangSelectDialog: FC<LangSelectDialogProps> = ({
   onSelectLang,
   onClose,
 }) => {
-  const { loading, error, data } = useQuery<GetLanguagesData>(GET_LANGUAGES);
+  const { loading, error, data } = useQuery<GetLanguagesData>(
+    GQL_GET_LANGUAGES,
+  );
 
   if (loading) return <p>Loading...</p>;
   if (error || !data) return <p>Error :(</p>;

@@ -4,6 +4,10 @@ export interface Entry {
   translation: string;
 }
 
+export interface Property {
+  name: string;
+}
+
 export interface Language {
   id: string;
   name: string;
