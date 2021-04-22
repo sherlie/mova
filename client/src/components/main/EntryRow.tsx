@@ -7,7 +7,11 @@ interface EntryProps {
 }
 
 const EntryRow: FC<EntryProps> = ({ entry }) => {
-  return <div>{entry.original}</div>;
+  return (
+    <div>
+      {entry.original} {entry.translation}
+    </div>
+  );
 };
 
 export default EntryRow;
