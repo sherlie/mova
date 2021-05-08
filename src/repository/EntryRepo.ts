@@ -94,7 +94,7 @@ export class EntryRepo {
                     return [
                         customId,
                         isTableCustomValue(customValue)
-                            ? { cells: Object.fromEntries(customValue.cells) }
+                            ? { table: Object.fromEntries(customValue.table) }
                             : customValueProps,
                     ];
                 }),
@@ -112,8 +112,8 @@ export class EntryRepo {
         return new Map<CustomId, CustomValueWithoutDef>(
             Array.from(customValues).map(([customId, customValue]) => [
                 customId,
-                customValue.cells
-                    ? { cells: new Map(Object.entries(customValue.cells)) }
+                customValue.table
+                    ? { table: new Map(Object.entries(customValue.table)) }
                     : customValue,
             ]),
         );
