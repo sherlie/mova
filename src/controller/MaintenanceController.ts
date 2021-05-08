@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import KoaRouter from 'koa-router';
 import { injectable } from 'inversify';
-import { App, AppContext } from '@app/init';
+import { App } from '@app/init';
 import { Controller } from './Controller';
-import { ExtendableContext } from 'koa';
 import { PartOfSpeech } from '@model/Entry';
 import { CustomType, SingleOptionCustomDef, TableCustomDef } from '@model/CustomDef';
+import { Context } from 'koa';
 
 @injectable()
 export class MaintenanceController implements Controller {
     register(app: App): void {
-        const router = new KoaRouter<unknown, AppContext>({ prefix: '/api/maint' });
+        const router = new KoaRouter({ prefix: '/api/maint' });
 
-        router.get('/', async (ctx: AppContext & ExtendableContext) => {
+        router.get('/', async (ctx: Context) => {
             const { langService, customDefService, entryService } = ctx.session;
 
             await langService.deleteAll();
@@ -56,7 +56,7 @@ export class MaintenanceController implements Controller {
                 translation: 'sun',
                 langId: lang1.id,
                 partOfSpeech: PartOfSpeech.Noun,
-                customValues: new Map([[def1.id, { singleOption: def1OptMasculine }]]),
+                customValues: { [def1.id]: { option: def1OptMasculine } },
             });
 
             const def2OptMasculine = Array.from(
@@ -68,7 +68,7 @@ export class MaintenanceController implements Controller {
                 translation: 'car',
                 langId: lang2.id,
                 partOfSpeech: PartOfSpeech.Noun,
-                customValues: new Map([[def2.id, { singleOption: def2OptMasculine }]]),
+                customValues: { [def2.id]: { option: def2OptMasculine } },
             });
 
             const def4CellIch = Array.from((def4 as TableCustomDef).table.entries()).find(
@@ -83,18 +83,15 @@ export class MaintenanceController implements Controller {
                 translation: 'say',
                 langId: lang2.id,
                 partOfSpeech: PartOfSpeech.Verb,
-                customValues: new Map([
-                    [def3.id, { text: 'gesagt' }],
-                    [
-                        def4.id,
-                        {
-                            table: [
-                                { id: def4CellIch, value: 'sage' },
-                                { id: def4CellDu, value: 'sagst' },
-                            ],
+                customValues: {
+                    [def3.id]: { text: 'gesagt' },
+                    [def4.id]: {
+                        table: {
+                            [def4CellIch]: 'sage',
+                            [def4CellDu]: 'sagst',
                         },
-                    ],
-                ]),
+                    },
+                },
             });
 
             ctx.body = 'ok';

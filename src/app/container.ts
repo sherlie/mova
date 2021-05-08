@@ -11,11 +11,11 @@ import { CustomDefService, CustomDefServiceImpl } from '@service/CustomDefServic
 import { LangDataLoader } from '@controller/graphql/dataloaders/LangDataLoader';
 import { EntryDataLoader } from '@controller/graphql/dataloaders/EntryDataLoader';
 import { Session } from '@controller/Session';
-import { GraphQLController } from '@controller/graphql/GraphQLController';
 import { Identifiers as Ids } from '@app/identifiers';
 import { MaintenanceController } from '@controller/MaintenanceController';
 import { CustomDefFactory, CustomDefFactoryImpl } from '@service/CustomDefFactory';
 import { CustomValueFactory, CustomValueFactoryImpl } from '@service/CustomValueFactory';
+import { RestController } from '@controller/rest/RestController';
 
 export const container = new inv.Container({
     defaultScope: 'Singleton',
@@ -45,5 +45,6 @@ container
         containerContext.container.get<Session>(Ids.Session),
     );
 
-container.bind<GraphQLController>(Ids.Controller).to(GraphQLController);
+//container.bind<GraphQLController>(Ids.Controller).to(GraphQLController); - temporarily disabled
+container.bind<RestController>(Ids.Controller).to(RestController);
 container.bind<MaintenanceController>(Ids.Controller).to(MaintenanceController);

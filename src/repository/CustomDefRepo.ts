@@ -2,7 +2,6 @@ import Knex from 'knex';
 import { injectable, inject } from 'inversify';
 import { LangId } from '@model/Lang';
 import { PartOfSpeech } from '@model/Entry';
-import { CustomDefScope } from '@service/CustomDefService';
 import {
     CustomDef,
     CustomId,
@@ -10,11 +9,9 @@ import {
     isMultiOptionCustomDef,
     isSingleOptionCustomDef,
     isTableCustomDef,
-    OptionId,
-    TableCell,
-    TableCellId,
 } from '@model/CustomDef';
 import { Identifiers } from '@app/identifiers';
+import { mapPage, page, Page, PageScope } from './paging';
 
 const TABLE = 'custom_defs';
 
@@ -27,7 +24,12 @@ interface CustomDefRecord {
     props?: string;
 }
 
-export interface GetAllScope {
+export interface CustomDefScope extends PageScope {
+    langId: LangId;
+    partOfSpeech?: PartOfSpeech;
+}
+
+export interface CustomDefByPosScope {
     langId: LangId;
     partOfSpeech: PartOfSpeech;
 }
@@ -36,16 +38,33 @@ export interface GetAllScope {
 export class CustomDefRepo {
     constructor(@inject(Identifiers.Database) private database: Knex<CustomDefRecord>) {}
 
-    async getAll({ langId, partOfSpeech }: CustomDefScope): Promise<CustomDef[]> {
+    async getAll(scope: CustomDefScope): Promise<Page<CustomDef>> {
+        let query = this.database(TABLE)
+            .select('*')
+            .where('lang_id', scope.langId)
+            .orderBy('add_time');
+
+        if (scope.partOfSpeech) {
+            query = query.where('pos', scope.partOfSpeech);
+        }
+
+        const customDefRecords = await page(query, scope);
+        return mapPage(customDefRecords, (customDefRecord) =>
+            this.mapCustomDefRecordToCustomDef(customDefRecord),
+        );
+    }
+
+    async getByPartOfSpeech(scope: CustomDefByPosScope): Promise<CustomDef[]> {
         const customDefRecords = await this.database(TABLE)
             .select('*')
-            .where('lang_id', langId)
-            .where('pos', partOfSpeech);
+            .where('lang_id', scope.langId)
+            .where('pos', scope.partOfSpeech);
 
         return customDefRecords.map((customDefRecord) =>
             this.mapCustomDefRecordToCustomDef(customDefRecord),
         );
     }
+
     async getByIds(customIds: CustomId[]): Promise<CustomDef[]> {
         const customDefRecords = await this.database(TABLE).whereIn('id', customIds);
 
@@ -78,9 +97,9 @@ export class CustomDefRepo {
 
     private serializeProps(customDef: CustomDef): string | undefined {
         if (isSingleOptionCustomDef(customDef) || isMultiOptionCustomDef(customDef)) {
-            return JSON.stringify({ options: Array.from(customDef.options.entries()) });
+            return JSON.stringify(Object.fromEntries(Array.from(customDef.options)));
         } else if (isTableCustomDef(customDef)) {
-            return JSON.stringify({ table: Array.from(customDef.table.entries()) });
+            return JSON.stringify(Object.fromEntries(Array.from(customDef.table)));
         }
     }
 
@@ -90,11 +109,9 @@ export class CustomDefRepo {
         const { type, props } = customDefRecord;
         const deserializedProps = props && JSON.parse(props);
         if (type === CustomType.SingleOption || type === CustomType.MultiOption) {
-            return {
-                options: new Map<OptionId, string>(deserializedProps.options),
-            };
+            return { options: new Map(Object.entries(deserializedProps)) };
         } else if (type === CustomType.Table) {
-            return { table: new Map<TableCellId, TableCell>(deserializedProps.table) };
+            return { table: new Map(Object.entries(deserializedProps)) };
         }
     }
 }

@@ -58,7 +58,7 @@ export class CustomDefFactoryImpl implements CustomDefFactory {
         type: CustomType.SingleOption | CustomType.MultiOption,
     ): SingleOptionCustomDef | MultiOptionCustomDef {
         const { options } = createCustomDef;
-        if (!options || !options.length) {
+        if (!options || options.length < 2) {
             throw new Error(ERR_OPTION_TYPE_NO_OPTIONS);
         }
 
@@ -71,7 +71,7 @@ export class CustomDefFactoryImpl implements CustomDefFactory {
 
     private buildTable(createCustomDef: CreateCustomDef): TableCustomDef {
         const { table } = createCustomDef;
-        if (!table || !table.length) {
+        if (!table || table.length < 2) {
             throw new Error(ERR_TABLE_TYPE_NO_TABLE_CELLS);
         }
 

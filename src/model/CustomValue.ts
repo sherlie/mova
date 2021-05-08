@@ -33,7 +33,7 @@ export interface MultiOptionCustomValue extends BaseCustomValue {
 
 export interface TableCustomValue extends BaseCustomValue {
     definition: TableCustomDef;
-    cells: Record<TableCellId, string>;
+    table: Map<TableCellId, string>;
 }
 
 export type CustomValue =

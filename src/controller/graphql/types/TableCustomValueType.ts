@@ -45,7 +45,7 @@ export const TableCustomValueType: GraphQLObjectType<
                 } = tableCustomValue;
 
                 return (
-                    Object.entries<string>(cells)
+                    Array.from(cells)
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         .sort(([id1], [id2]) => table.get(id1)!.index - table.get(id2)!.index)
                         .map(([id, value]) => ({

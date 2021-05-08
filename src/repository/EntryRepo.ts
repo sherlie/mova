@@ -6,7 +6,7 @@ import { LangId } from '@model/Lang';
 import { Entry, EntryId, PartOfSpeech } from '@model/Entry';
 import { Maybe, Replace } from '@util/types';
 import { CustomId } from '@model/CustomDef';
-import { CustomValue } from '@model/CustomValue';
+import { CustomValue, isTableCustomValue } from '@model/CustomValue';
 
 const TABLE = 'entries';
 
@@ -41,7 +41,7 @@ export class EntryRepo {
         const query = this.database(TABLE)
             .select('*')
             .where('lang_id', scope.langId)
-            .orderBy('add_time');
+            .orderBy('add_time DESC');
         const entryRecordPage = await page(query, scope);
 
         return mapPage(entryRecordPage, (entryRecord) => this.mapEntryRecordToEntry(entryRecord));
@@ -87,11 +87,16 @@ export class EntryRepo {
         }
         return JSON.stringify(
             Object.fromEntries(
-                Array.from(customValues.entries()).map(([customId, customValue]) => {
+                Array.from(customValues).map(([customId, customValue]) => {
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     const { definition, ...customValueProps } = customValue;
 
-                    return [customId, customValueProps];
+                    return [
+                        customId,
+                        isTableCustomValue(customValue)
+                            ? { cells: Object.fromEntries(customValue.cells) }
+                            : customValueProps,
+                    ];
                 }),
             ),
         );
@@ -100,6 +105,17 @@ export class EntryRepo {
     private deserializeCustom(
         custom: string | undefined,
     ): Map<CustomId, CustomValueWithoutDef> | undefined {
-        return custom ? new Map(Object.entries(JSON.parse(custom))) : undefined;
+        if (!custom) {
+            return;
+        }
+        const customValues = new Map<CustomId, any>(Object.entries(JSON.parse(custom)));
+        return new Map<CustomId, CustomValueWithoutDef>(
+            Array.from(customValues).map(([customId, customValue]) => [
+                customId,
+                customValue.cells
+                    ? { cells: new Map(Object.entries(customValue.cells)) }
+                    : customValue,
+            ]),
+        );
     }
 }

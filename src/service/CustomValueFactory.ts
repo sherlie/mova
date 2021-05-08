@@ -61,19 +61,17 @@ export class CustomValueFactoryImpl implements CustomValueFactory {
         createCustomValue: CreateCustomValue,
         customDef: SingleOptionCustomDef,
     ): SingleOptionCustomValue {
-        if (!createCustomValue.singleOption) {
+        if (!createCustomValue.option) {
             throw new Error(ERR_OPTION_TYPE_NO_OPTION);
         }
 
-        if (!customDef.options.has(createCustomValue.singleOption)) {
-            throw new Error(
-                `${ERR_OPTION_TYPE_INVALID_OPTION}: [${createCustomValue.singleOption}]`,
-            );
+        if (!customDef.options.has(createCustomValue.option)) {
+            throw new Error(`${ERR_OPTION_TYPE_INVALID_OPTION}: [${createCustomValue.option}]`);
         }
 
         return {
             definition: customDef,
-            option: createCustomValue.singleOption,
+            option: createCustomValue.option,
         };
     }
 
@@ -81,11 +79,13 @@ export class CustomValueFactoryImpl implements CustomValueFactory {
         createCustomValue: CreateCustomValue,
         customDef: MultiOptionCustomDef,
     ): MultiOptionCustomValue {
-        if (!createCustomValue.multiOption || !createCustomValue.multiOption.length) {
+        if (!createCustomValue.options || !createCustomValue.options.length) {
             throw new Error(ERR_OPTION_TYPE_NO_OPTION);
         }
 
-        const invalidOptions = createCustomValue.multiOption.filter(
+        createCustomValue.options = Array.from(new Set(createCustomValue.options));
+
+        const invalidOptions = createCustomValue.options.filter(
             (option) => !customDef.options.has(option),
         );
         if (invalidOptions.length) {
@@ -98,7 +98,7 @@ export class CustomValueFactoryImpl implements CustomValueFactory {
 
         return {
             definition: customDef,
-            options: createCustomValue.multiOption,
+            options: createCustomValue.options,
         };
     }
 
@@ -106,22 +106,22 @@ export class CustomValueFactoryImpl implements CustomValueFactory {
         createCustomValue: CreateCustomValue,
         customDef: TableCustomDef,
     ): TableCustomValue {
-        if (!createCustomValue.table || !createCustomValue.table.length) {
+        if (!createCustomValue.table || !Object.keys(createCustomValue.table).length) {
             throw new Error(ERR_TABLE_TYPE_NO_CELLS);
         }
 
-        const invalidCells = createCustomValue.table.filter(
-            (cell) => !customDef.table.has(cell.id),
+        const invalidCellIds = Object.keys(createCustomValue.table).filter(
+            (cellId) => !customDef.table.has(cellId),
         );
-        if (invalidCells.length) {
-            const invalidCellsFormatted = invalidCells.map((cell) => `[${cell.id}]`).join(', ');
+        if (invalidCellIds.length) {
+            const invalidCellsFormatted = invalidCellIds.map((cellId) => `[${cellId}]`).join(', ');
 
             throw new Error(`${ERR_TABLE_TYPE_INVALID_CELL}: ${invalidCellsFormatted}`);
         }
 
         return {
             definition: customDef,
-            cells: Object.fromEntries(createCustomValue.table.map((cell) => [cell.id, cell.value])),
+            table: new Map(Object.entries(createCustomValue.table)),
         };
     }
 }

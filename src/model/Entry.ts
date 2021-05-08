@@ -20,5 +20,5 @@ export enum PartOfSpeech {
     Adj = 'adj',
     Adv = 'adv',
     Pron = 'pron',
-    Aux = 'aux',
+    Misc = 'misc',
 }

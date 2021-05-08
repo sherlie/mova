@@ -2,7 +2,6 @@ import { Identifiers } from '@app/identifiers';
 import { Lang, LangId } from '@model/Lang';
 import { LangRepo } from '@repository/LangRepo';
 import { Page, PageScope } from '@repository/paging';
-import { Maybe } from '@util/types';
 import { inject, injectable } from 'inversify';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -14,11 +13,13 @@ export interface CreateLang {
 
 export interface LangService {
     getAll(scope: LangScope): Promise<Page<Lang>>;
-    getById(langIds: LangId): Promise<Maybe<Lang>>;
+    getById(langId: LangId): Promise<Lang>;
     getByIds(langIds: LangId[]): Promise<Lang[]>;
     create(createLang: CreateLang): Promise<Lang>;
     deleteAll(): Promise<void>;
 }
+
+const ERR_LANG_NOT_FOUND = 'Language not found';
 
 @injectable()
 export class LangServiceImpl implements LangService {
@@ -28,8 +29,13 @@ export class LangServiceImpl implements LangService {
         return await this.langRepo.getAll(scope);
     }
 
-    async getById(langId: LangId): Promise<Maybe<Lang>> {
-        return await this.langRepo.getById(langId);
+    async getById(langId: LangId): Promise<Lang> {
+        const lang = await this.langRepo.getById(langId);
+        if (!lang) {
+            throw new Error(`${ERR_LANG_NOT_FOUND}: [${langId}]`);
+        }
+
+        return lang;
     }
 
     async getByIds(langIds: LangId[]): Promise<Lang[]> {

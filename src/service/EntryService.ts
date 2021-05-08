@@ -3,13 +3,13 @@ import { CustomDef, CustomId, OptionId, TableCellId } from '@model/CustomDef';
 import { Entry, EntryId, PartOfSpeech } from '@model/Entry';
 import { LangId } from '@model/Lang';
 import { CustomValueWithoutDef, EntryRepo, EntryWithoutCustomDefs } from '@repository/EntryRepo';
-import { Page, PageScope } from '@repository/paging';
-import { Maybe } from '@util/types';
+import { mapPage, Page, PageScope } from '@repository/paging';
 import { inject, injectable } from 'inversify';
 import { CustomDefService } from './CustomDefService';
 import { CustomValue, TextCustomValue } from '@model/CustomValue';
 import { CustomValueFactory } from './CustomValueFactory';
 import { v4 as uuidv4 } from 'uuid';
+import { LangService } from './LangService';
 
 export interface EntryScope extends PageScope {
     langId: LangId;
@@ -20,27 +20,23 @@ export interface CreateEntry {
     translation: string;
     langId: LangId;
     partOfSpeech: PartOfSpeech;
-    customValues?: Map<CustomId, CreateCustomValue>;
+    customValues?: Record<CustomId, CreateCustomValue>;
 }
 
 export interface CreateCustomValue {
     text?: string;
-    singleOption?: OptionId;
-    multiOption?: OptionId[];
-    table?: CreateCustomValueTableCell[];
-}
-
-export interface CreateCustomValueTableCell {
-    id: TableCellId;
-    value: string;
+    option?: OptionId;
+    options?: OptionId[];
+    table?: Record<TableCellId, string>;
 }
 export interface EntryService {
     getAll(scope: EntryScope): Promise<Page<Entry>>;
-    getById(entryId: EntryId): Promise<Maybe<Entry>>;
+    getById(entryId: EntryId): Promise<Entry>;
     getByIds(entryIds: EntryId[]): Promise<Entry[]>;
     create(createEntry: CreateEntry): Promise<Entry>;
 }
 
+const ERR_ENTRY_NOT_FOUND = 'Entry not found';
 const ERR_INVALID_CUSTOM_DEFS_FOR_ENTRY =
     'Entry custom value definitions are not valid for the entry';
 
@@ -48,23 +44,25 @@ const ERR_INVALID_CUSTOM_DEFS_FOR_ENTRY =
 export class EntryServiceImpl implements EntryService {
     constructor(
         @inject(Identifiers.EntryRepo) private entryRepo: EntryRepo,
+        @inject(Identifiers.LangService) private langService: LangService,
         @inject(Identifiers.CustomDefService) private customDefService: CustomDefService,
         @inject(Identifiers.CustomValueFactory) private customValueFactory: CustomValueFactory,
     ) {}
 
     async getAll(scope: EntryScope): Promise<Page<Entry>> {
-        const { items: entries, hasMore } = await this.entryRepo.getAll(scope);
+        const entries = await this.entryRepo.getAll(scope);
 
-        return {
-            items: await this.setEntriesCustomDefs(entries),
-            hasMore,
-        };
+        return mapPage(entries, (entry) => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { customValues, ...entryWithoutCustomValues } = entry;
+            return entryWithoutCustomValues;
+        });
     }
 
-    async getById(entryId: EntryId): Promise<Maybe<Entry>> {
+    async getById(entryId: EntryId): Promise<Entry> {
         const entry = await this.entryRepo.getById(entryId);
         if (!entry) {
-            return;
+            throw new Error(`${ERR_ENTRY_NOT_FOUND}: [${entryId}]`);
         }
 
         return (await this.setEntriesCustomDefs([entry]))[0];
@@ -77,6 +75,8 @@ export class EntryServiceImpl implements EntryService {
     }
 
     async create(createEntry: CreateEntry): Promise<Entry> {
+        await this.langService.getById(createEntry.langId);
+
         const entry: Entry = {
             id: uuidv4(),
             original: createEntry.original,
@@ -135,11 +135,11 @@ export class EntryServiceImpl implements EntryService {
     private async buildCustomValues(
         createEntry: CreateEntry,
     ): Promise<Map<CustomId, CustomValue> | undefined> {
-        if (!createEntry.customValues || !createEntry.customValues.size) {
+        if (!createEntry.customValues || !Object.keys(createEntry.customValues).length) {
             return;
         }
 
-        const customDefsMap = await this.getCustomDefs(Array.from(createEntry.customValues.keys()));
+        const customDefsMap = await this.getCustomDefs(Object.keys(createEntry.customValues));
 
         const invalidCustomIdsForEntry = Array.from(customDefsMap.values())
             .filter(
@@ -153,11 +153,13 @@ export class EntryServiceImpl implements EntryService {
         }
 
         const customValuesMap = new Map<CustomId, CustomValue>(
-            Array.from(createEntry.customValues).map(([customId, createCustomValue]) => [
-                customId,
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                this.customValueFactory.build(createCustomValue, customDefsMap.get(customId)!),
-            ]),
+            Object.entries<CreateCustomValue>(createEntry.customValues).map(
+                ([customId, createCustomValue]) => [
+                    customId,
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    this.customValueFactory.build(createCustomValue, customDefsMap.get(customId)!),
+                ],
+            ),
         );
 
         return customValuesMap;
