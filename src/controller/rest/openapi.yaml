@@ -1,0 +1,468 @@
+openapi: 3.0.1
+info:
+  title: Mova.io API
+  version: 1.0.0
+servers:
+- url: http://localhost:9000/api
+tags:
+- name: lang
+  description: Languages in the dictionary
+- name: entry
+  description: Translation entries in the dictionary
+- name: definition
+  description: Custom property definitions for entries in the dictionary
+- name: maintenance
+  description: Maintenance endpoints
+paths:
+  /langs:
+    get:
+      tags:
+      - lang
+      summary: Get a page of languages
+      operationId: getLangs
+      parameters:
+      - name: start
+        in: query
+        description: Pagination start
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        description: Pagination limit
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Found languages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Language'
+                  hasMore:
+                    type: boolean
+    post:
+      tags:
+      - lang
+      summary: Add language
+      operationId: createLang
+      requestBody:
+        description: Language parameters
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              required:
+                - name
+        required: true
+      responses:
+        200:
+          description: Created language
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+  /langs/{langId}:
+    get:
+      tags:
+      - lang
+      summary: Get language by ID
+      operationId: getLang
+      parameters:
+      - name: langId
+        in: path
+        description: Language ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      responses:
+        200:
+          description: Found language
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+        400:
+          description: Language not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /entries:
+    get:
+      tags:
+      - entry
+      summary: Get a page of entries
+      operationId: getEntries
+      parameters:
+      - name: langId
+        in: query
+        description: Language ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: start
+        in: query
+        description: Pagination start
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        description: Pagination limit
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Found entries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Entry'
+                  hasMore:
+                    type: boolean
+    post:
+      tags:
+      - entry
+      summary: Add entry
+      operationId: createEntry
+      requestBody:
+        description: Entry parameters
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                original:
+                  type: string
+                translation:
+                  type: string
+                langId:
+                  type: string
+                  format: uuid
+                partOfSpeech:
+                  $ref: '#/components/schemas/PartOfSpeech'
+                customValues:
+                  type: object
+                  additionalProperties:
+                    type: object
+                    properties:
+                      text:
+                        type: string
+                      option:
+                        type: string
+                        format: uuid
+                      options:
+                        type: array
+                        items:
+                          type: string
+                          format: uuid
+                      table:
+                        type: object
+                        additionalProperties:
+                          type: string
+              required:
+                - original
+                - translation
+                - langId
+                - partOfSpeech
+        required: true
+      responses:
+        200:
+          description: Created entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntryFull'
+  /entries/{entryId}:
+    get:
+      tags:
+      - entry
+      summary: Get entry by ID
+      operationId: getEntry
+      parameters:
+      - name: entryId
+        in: path
+        description: Entry ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      responses:
+        200:
+          description: Found entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntryFull'
+        400:
+          description: Entry not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /entries/{entryId}/definitions:
+    get:
+      tags:
+      - entry
+      summary: Get definitions applicable for entry with ID
+      operationId: getEntryDefs
+      parameters:
+      - name: entryId
+        in: path
+        description: Entry ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      responses:
+        200:
+          description: Found entry definitions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomDefinition'
+        400:
+          description: Language not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /definitions:
+    get:
+      tags:
+      - definition
+      summary: Get a page of definitions
+      operationId: getDefs
+      parameters:
+      - name: langId
+        in: query
+        description: Language ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - name: partOfSpeech
+        in: query
+        description: Part of speech
+        schema:
+          $ref: '#/components/schemas/PartOfSpeech'
+      - name: start
+        in: query
+        description: Pagination start
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        description: Pagination limit
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Found definition
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CustomDefinition'
+                  hasMore:
+                    type: boolean
+    post:
+      tags:
+      - definition
+      summary: Add definition
+      operationId: createDef
+      requestBody:
+        description: Definition parameters
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                type:
+                  $ref: '#/components/schemas/CustomType'
+                langId:
+                  type: string
+                  format: uuid
+                partOfSpeech:
+                   $ref: '#/components/schemas/PartOfSpeech'
+                options:
+                  type: array
+                  items:
+                    type: string
+                table:
+                  type: array
+                  items:
+                    type: string
+              required:
+                - name
+                - type
+                - langId
+                - partOfSpeech
+        required: true
+      responses:
+        200:
+          description: Created definition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomDefinition'
+  /maint:
+    get:
+      tags:
+      - maintenance
+      summary: Clear and create test data
+      operationId: initData
+      responses:
+        200:
+          description: Success
+components:
+  schemas:
+    Language:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+      required:
+        - id
+        - name
+    Entry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        original:
+          type: string
+        translation:
+          type: string
+        partOfSpeech:
+          $ref: '#/components/schemas/PartOfSpeech'
+    PartOfSpeech:
+      type: string
+      enum: ['noun', 'verb', 'adj', 'adv', 'pron', 'misc']
+    EntryFull:
+      allOf:
+      - $ref: '#/components/schemas/Entry'
+      - type: object
+        properties:
+          customValues:
+            additionalProperties:
+              $ref: '#/components/schemas/CustomValue'
+    CustomType:
+      type: string
+      enum: ['text', 'single', 'multi', 'table']
+    CustomValue:
+      oneOf:
+      - $ref: '#/components/schemas/TextCustomValue'
+      - $ref: '#/components/schemas/SingleOptionCustomValue'
+      - $ref: '#/components/schemas/MultiOptionCustomValue'
+      - $ref: '#/components/schemas/TableCustomValue'
+    TextCustomValue:
+      type: object
+      properties:
+        definition:
+          $ref: '#/components/schemas/TextCustomDefinition'
+        text:
+          type: string
+    SingleOptionCustomValue:
+      type: object
+      properties:
+        definition:
+          $ref: '#/components/schemas/OptionCustomDefinition'
+        option:
+          type: string
+          format: uuid
+    MultiOptionCustomValue:
+      type: object
+      properties:
+        definition:
+          $ref: '#/components/schemas/OptionCustomDefinition'
+        options:
+          type: array
+          items:
+            type: string
+            format: uuid
+    TableCustomValue:
+      type: object
+      properties:
+        definition:
+          $ref: '#/components/schemas/TableCustomDefinition'
+        table:
+          type: object
+          additionalProperties:
+            type: string
+    BaseCustomDefinition:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/CustomType'
+        langId:
+          type: string
+          format: uuid
+        partOfSpeech:
+          $ref: '#/components/schemas/PartOfSpeech'
+    TextCustomDefinition:
+      allOf:
+       - $ref: '#/components/schemas/BaseCustomDefinition'
+    OptionCustomDefinition:
+     allOf:
+     - $ref: '#/components/schemas/BaseCustomDefinition'
+     - type: object
+       properties:
+        options:
+          type: object
+          additionalProperties:
+            type: string
+    TableCustomDefinition:
+     allOf:
+     - $ref: '#/components/schemas/BaseCustomDefinition'
+     - type: object
+       properties:
+        table:
+          type: object
+          additionalProperties:
+            type: string
+    CustomDefinition:
+      oneOf:
+      - $ref: '#/components/schemas/TextCustomDefinition'
+      - $ref: '#/components/schemas/OptionCustomDefinition'
+      - $ref: '#/components/schemas/TableCustomDefinition'

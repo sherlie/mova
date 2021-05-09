@@ -1,6 +1,8 @@
 import { injectable } from 'inversify';
 import KoaRouter from 'koa-router';
 import bodyParser from 'koa-bodyparser';
+import { koaSwagger } from 'koa2-swagger-ui';
+import * as yamlJs from 'yamljs';
 import { Controller } from '@controller/Controller';
 import { App, AppContext } from '@app/init';
 import { apiResponse } from './apiResponse';
@@ -29,5 +31,14 @@ export class RestController implements Controller {
         router.get('/entries/:id/definitions', getEntryDefs);
 
         app.use(router.routes());
+
+        app.use(
+            koaSwagger({
+                routePrefix: '/api/docs',
+                swaggerOptions: {
+                    spec: yamlJs.load(`${__dirname}/openapi.yaml`),
+                },
+            }),
+        );
     }
 }

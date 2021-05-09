@@ -41,7 +41,7 @@ export class EntryRepo {
         const query = this.database(TABLE)
             .select('*')
             .where('lang_id', scope.langId)
-            .orderBy('add_time DESC');
+            .orderBy('add_time', 'desc');
         const entryRecordPage = await page(query, scope);
 
         return mapPage(entryRecordPage, (entryRecord) => this.mapEntryRecordToEntry(entryRecord));
