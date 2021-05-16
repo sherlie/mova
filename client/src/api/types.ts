@@ -2,10 +2,16 @@ export interface Entry {
   id: string;
   original: string;
   translation: string;
+  partOfSpeech: PartOfSpeech;
 }
 
 export interface Property {
+  id: string;
   name: string;
+  type: CustomType;
+  partOfSpeech: PartOfSpeech;
+  options?: string[];
+  table?: TableCell[];
 }
 
 export interface Language {
@@ -51,4 +57,20 @@ export interface CustomDefinition {
 export interface Page<T> {
   items: T[];
   hasMore: boolean;
+}
+
+export interface CreateEntryParams {
+  original: string;
+  translation: string;
+  langId: string;
+  partOfSpeech: PartOfSpeech;
+}
+
+export interface CreatePropertyParams {
+  name: string;
+  type: string;
+  langId: string;
+  partOfSpeech: PartOfSpeech;
+  options?: string[];
+  text?: string;
 }

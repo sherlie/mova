@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 
-import { Entry } from '../../graphql/types';
+import { Entry } from '../../api/types';
+import '../App.css';
 
 interface EntryProps {
   entry: Entry;
@@ -9,7 +10,12 @@ interface EntryProps {
 const EntryRow: FC<EntryProps> = ({ entry }) => {
   return (
     <div>
-      {entry.original} {entry.translation}
+      <div className='grid-container-2-equal'>
+        <div className='grid-item no-border'>
+          <b> {entry.original} </b>
+        </div>
+        <div className='grid-item no-border'>{entry.translation}</div>
+      </div>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Language } from '../graphql/types';
+import { Language } from '../api/types';
 
 interface LanguageSelectProps {
   languages: Language[];
