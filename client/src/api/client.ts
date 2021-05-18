@@ -1,11 +1,4 @@
-import {
-  Page,
-  Language,
-  Entry,
-  Property,
-  CreateEntryParams,
-  CreatePropertyParams,
-} from './types';
+import { Page, Language, Entry, Property, PartOfSpeech } from './types';
 
 const API = 'http://localhost:9000/api';
 
@@ -25,6 +18,12 @@ export async function getLanguageProperties(
   const response = await fetch(`${API}/definitions?langId=${langId}`);
   return response.json();
 }
+export interface CreateEntryParams {
+  original: string;
+  translation: string;
+  langId: string;
+  partOfSpeech: PartOfSpeech;
+}
 
 export async function createEntry(
   createEntry: CreateEntryParams,
@@ -37,6 +36,15 @@ export async function createEntry(
     body: JSON.stringify(createEntry),
   });
   return response.json();
+}
+
+export interface CreatePropertyParams {
+  name: string;
+  type: string;
+  langId: string;
+  partOfSpeech: PartOfSpeech;
+  options?: string[];
+  text?: string;
 }
 
 export async function createProperty(

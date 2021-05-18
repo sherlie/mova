@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { ApolloProvider } from '@apollo/client';
 
 import './App.css';
 import { client } from '../graphql/client';
@@ -18,7 +17,7 @@ function App() {
   const [open, setOpen] = useState(false);
 
   return (
-    <ApolloProvider client={client}>
+    <div>
       <Menu setOpen={setOpen} />
       <main>
         <AppSwitch selectedLang={selectedLang} />
@@ -33,7 +32,7 @@ function App() {
           onClose={() => setOpen(false)}
         />
       )}
-    </ApolloProvider>
+    </div>
   );
 }
 

@@ -50,27 +50,11 @@ export interface CustomDefinition {
   name: string;
   type: CustomType;
   partOfSpeech: PartOfSpeech;
-  options?: Option[];
-  table?: TableCell[];
+  options?: Record<string, string>[];
+  table?: Record<string, string>[];
 }
 
 export interface Page<T> {
   items: T[];
   hasMore: boolean;
-}
-
-export interface CreateEntryParams {
-  original: string;
-  translation: string;
-  langId: string;
-  partOfSpeech: PartOfSpeech;
-}
-
-export interface CreatePropertyParams {
-  name: string;
-  type: string;
-  langId: string;
-  partOfSpeech: PartOfSpeech;
-  options?: string[];
-  text?: string;
 }

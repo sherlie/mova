@@ -30,6 +30,7 @@ const AddPropetyDialog: FC<PropetyDialogProps> = ({
       type,
       langId: selectedLang.id,
       partOfSpeech: pos.toLowerCase() as PartOfSpeech,
+      options: inputList,
     }),
   );
 
@@ -106,7 +107,7 @@ const AddPropetyDialog: FC<PropetyDialogProps> = ({
           <textarea className='basic-slide'></textarea>
         </div>
       )}
-      {(type === 'single' || type === 'multi') && (
+      {(type === 'single' || type === 'multi' || type === 'table') && (
         <div>
           <label>OPTIONS</label>
           {inputList.map((x, i) => {
@@ -115,7 +116,11 @@ const AddPropetyDialog: FC<PropetyDialogProps> = ({
                 <input
                   className='basic-slide'
                   name='firstName'
-                  placeholder='Enter property option'
+                  placeholder={
+                    type === 'table'
+                      ? 'Enter table cell'
+                      : 'Enter property option'
+                  }
                   value={x}
                   onChange={(e) => handleInputChange(e.target.value, i)}
                 />
@@ -131,7 +136,7 @@ const AddPropetyDialog: FC<PropetyDialogProps> = ({
                   <>
                     <br />
                     <button className='submit-button' onClick={handleAddClick}>
-                      Add option
+                      Add {type === 'table' ? 'table cell' : 'option'}
                     </button>
                   </>
                 )}

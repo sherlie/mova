@@ -23,8 +23,6 @@ const LangSelectDialog: FC<LangSelectDialogProps> = ({
   if (error) return <p>Error!</p>;
   if (loading) return <p>Loading...</p>;
 
-  console.log(languages);
-
   return (
     <dialog open>
       <select

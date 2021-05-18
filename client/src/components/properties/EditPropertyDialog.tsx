@@ -111,15 +111,6 @@ const AddPropetyDialog: FC<PropetyDialogProps> = ({ property, onClose }) => {
                     value={option}
                     onChange={(e) => handleInputChange(e.target.value, i)}
                   />
-                  {/* {inputList.length !== 1 && (
-                      <button onClick={() => handleRemoveClick(i)} className="submit-button">x</button>
-                    )}
-                    {inputList.length - 1 === i && (
-                      <>
-                        <br />
-                        <button className="submit-button" onClick={handleAddClick}>Add option</button>
-                      </>
-                    )} */}
                 </div>
               );
             })}
@@ -129,7 +120,7 @@ const AddPropetyDialog: FC<PropetyDialogProps> = ({ property, onClose }) => {
         <i className='fas fa-window-close'></i>
       </a>
       <button className='confirm-button' onClick={() => handleSubmit()}>
-        SUBMIT
+        CLOSE
       </button>
     </dialog>
   );
