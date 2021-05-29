@@ -14,15 +14,37 @@ export async function getLanguageEntries(langId: string): Promise<Page<Entry>> {
 
 export async function getLanguageProperties(
   langId: string,
+  partOfSpeech?: PartOfSpeech,
 ): Promise<Page<Property>> {
-  const response = await fetch(`${API}/definitions?langId=${langId}`);
+  const url = new URL(`${API}/definitions`);
+  const params: any = { langId };
+  if (partOfSpeech) {
+    params.partOfSpeech = partOfSpeech;
+  }
+  url.search = new URLSearchParams(params).toString();
+
+  const response = await fetch(url.toString());
   return response.json();
 }
+
 export interface CreateEntryParams {
   original: string;
   translation: string;
   langId: string;
   partOfSpeech: PartOfSpeech;
+  customValues?: CreateEntryPropertyValues;
+}
+
+export type CreateEntryPropertyValues = Record<
+  string,
+  CreateEntryPropertyValue
+>;
+
+export interface CreateEntryPropertyValue {
+  text?: string;
+  option?: string;
+  options?: string[];
+  table?: Record<string, string>;
 }
 
 export async function createEntry(
@@ -44,6 +66,7 @@ export interface CreatePropertyParams {
   langId: string;
   partOfSpeech: PartOfSpeech;
   options?: string[];
+  table?: string[];
   text?: string;
 }
 

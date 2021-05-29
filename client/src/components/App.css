@@ -13,7 +13,8 @@ main {
 }
 .basic-slide {
   display: inline-block;
-  width: min(215px, 100%);
+  /* width: min(215px, 100%); */
+  width: 90%;
   padding: 10px 0 10px 15px;
   /* font-family: "Open Sans", sans; */
   font-weight: 400;
@@ -201,6 +202,7 @@ label {
 .dialog {
   width: 40%;
   height: 80%;
+  overflow-y: auto;
 }
 .container {
   position: relative;

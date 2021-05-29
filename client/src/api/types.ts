@@ -8,10 +8,10 @@ export interface Entry {
 export interface Property {
   id: string;
   name: string;
-  type: CustomType;
+  type: string;
   partOfSpeech: PartOfSpeech;
-  options?: string[];
-  table?: TableCell[];
+  options?: Record<string, string>;
+  table?: Record<string, string>;
 }
 
 export interface Language {
@@ -20,19 +20,19 @@ export interface Language {
 }
 
 export enum CustomType {
-  Text = 'Text',
-  SingleOption = 'SingleOption',
-  MultiOption = 'MultiOption',
-  Table = 'Table',
+  Text = 'text',
+  SingleOption = 'single',
+  MultiOption = 'multi',
+  Table = 'table',
 }
 
 export enum PartOfSpeech {
-  Noun = 'Noun',
-  Verb = 'Verb',
-  Adj = 'Adj',
-  Adv = 'Adv',
-  Pron = 'Pron',
-  Aux = 'Aux',
+  Noun = 'noun',
+  Verb = 'verb',
+  Adj = 'adj',
+  Adv = 'adv',
+  Pron = 'pron',
+  Aux = 'aux',
 }
 
 export interface Option {

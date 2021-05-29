@@ -6,15 +6,10 @@ import '../App.css';
 
 interface EntryListProps {
   entries: Entry[] | undefined;
-  openedEntry: Entry | undefined;
   setOpenedEntry: (entry: Entry) => void;
 }
 
-const EntryList: FC<EntryListProps> = ({
-  entries,
-  openedEntry,
-  setOpenedEntry,
-}) => {
+const EntryList: FC<EntryListProps> = ({ entries, setOpenedEntry }) => {
   if (!entries) return <div></div>;
   console.log(entries);
 

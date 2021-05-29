@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 
-import EntryRow from './EntryRow';
 import { Entry } from '../../api/types';
 import '../App.css';
 

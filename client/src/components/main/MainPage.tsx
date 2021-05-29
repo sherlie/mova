@@ -44,11 +44,7 @@ const MainPage: FC<MainPageProps> = ({ selectedLang }) => {
 
       <div className='grid-container-2-equal'>
         <div>
-          <EntryList
-            entries={entries}
-            openedEntry={openedEntry}
-            setOpenedEntry={setOpenedEntry}
-          />
+          <EntryList entries={entries} setOpenedEntry={setOpenedEntry} />
         </div>
         {openedEntry && (
           <div className='grid-item entry-detailed'>

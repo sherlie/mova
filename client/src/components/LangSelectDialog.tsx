@@ -1,6 +1,6 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 
-import { Page, Language } from '../api/types';
+import { Language } from '../api/types';
 import { getLanguages } from '../api/client';
 import { useQuery } from '../api/useQuery';
 

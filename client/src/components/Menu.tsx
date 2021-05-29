@@ -1,8 +1,5 @@
 import React, { FC } from 'react';
-
-import { Language } from '../api/types';
 import './App.css';
-import LangSelectDialog from './LangSelectDialog';
 
 interface MenuProps {
   setOpen: (open: boolean) => void;

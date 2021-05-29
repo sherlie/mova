@@ -1,7 +1,7 @@
 import React, { useState, FC } from 'react';
 
 import { useMutation } from '../../api/useMutation';
-import { Language, PartOfSpeech } from '../../api/types';
+import { CustomType, Language, PartOfSpeech } from '../../api/types';
 import '../App.css';
 import { createProperty } from '../../api/client';
 
@@ -10,32 +10,33 @@ interface PropetyDialogProps {
   onClose: () => void;
 }
 
-interface Something {
-  firstName: string;
-  lastName: string;
-}
-
 const AddPropetyDialog: FC<PropetyDialogProps> = ({
   selectedLang,
   onClose,
 }) => {
   const [inputList, setInputList] = useState<string[]>(['']);
   const [name, setName] = useState<string>('');
+  const [text, setText] = useState('');
   const [type, setType] = useState<string>('text');
   const [pos, setPos] = useState('Noun');
 
-  const [addProperty, { error, loading }] = useMutation(() =>
+  const [addProperty, { loading }] = useMutation(() =>
     createProperty({
       name,
       type,
       langId: selectedLang.id,
       partOfSpeech: pos.toLowerCase() as PartOfSpeech,
-      options: inputList,
+      options:
+        type === CustomType.SingleOption || type === CustomType.MultiOption
+          ? inputList
+          : undefined,
+      table: type === CustomType.Table ? inputList : undefined,
     }),
   );
 
   const handleSubmit = async () => {
     await addProperty();
+    console.log('added?', text);
     onClose();
   };
 
@@ -104,7 +105,11 @@ const AddPropetyDialog: FC<PropetyDialogProps> = ({
         <div>
           <label>TEXT</label>
           <br />
-          <textarea className='basic-slide'></textarea>
+          <textarea
+            className='basic-slide'
+            onChange={(event) => setText(event.target.value)}
+            value={text}
+          ></textarea>
         </div>
       )}
       {(type === 'single' || type === 'multi' || type === 'table') && (
@@ -149,7 +154,7 @@ const AddPropetyDialog: FC<PropetyDialogProps> = ({
         <i className='fas fa-window-close'></i>
       </a>
       <button className='confirm-button' onClick={() => handleSubmit()}>
-        SUBMIT
+        {loading ? '...' : 'SUBMIT'}
       </button>
     </dialog>
   );

@@ -1,20 +1,12 @@
 import React, { useState, FC } from 'react';
 
-import { useMutation } from '../../api/useMutation';
-import { Language, PartOfSpeech, Property } from '../../api/types';
+import { PartOfSpeech, Property } from '../../api/types';
 
 import '../App.css';
-import { createProperty } from '../../api/client';
-import PropertiesPage from './PropertiesPage';
 
 interface PropetyDialogProps {
   property: Property;
   onClose: () => void;
-}
-
-interface Something {
-  firstName: string;
-  lastName: string;
 }
 
 const AddPropetyDialog: FC<PropetyDialogProps> = ({ property, onClose }) => {
@@ -32,16 +24,6 @@ const AddPropetyDialog: FC<PropetyDialogProps> = ({ property, onClose }) => {
     const list = [...inputList];
     list[index] = value;
     setInputList(list);
-  };
-
-  const handleRemoveClick = (index: number) => {
-    const list = [...inputList];
-    list.splice(index, 1);
-    setInputList(list);
-  };
-
-  const handleAddClick = () => {
-    setInputList([...inputList, '']);
   };
 
   return (

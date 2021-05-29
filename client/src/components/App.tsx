@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 import './App.css';
-import { client } from '../graphql/client';
 import { Language } from '../api/types';
 import LangSelectDialog from './LangSelectDialog';
 import Menu from './Menu';
