@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { Language } from '../graphql/types';
+import { Language } from '../api/types';
 
 import MainPage from './main/MainPage';
-import LanguagesPage from './properties/PropertiesPage';
+import PropertiesPage from './properties/PropertiesPage';
 
 interface AppSwitchProps {
   selectedLang: Language | undefined;
@@ -20,7 +20,7 @@ const AppSwitch: FC<AppSwitchProps> = ({ selectedLang }) => {
         />
         <Route
           path='/languages'
-          render={() => <LanguagesPage selectedLang={selectedLang} />}
+          render={() => <PropertiesPage selectedLang={selectedLang} />}
         />
       </Switch>
     </Router>

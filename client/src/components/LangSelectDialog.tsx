@@ -1,12 +1,8 @@
-import React, { useState, FC } from 'react';
-import { useQuery } from '@apollo/client';
+import React, { FC } from 'react';
 
-import { GQL_GET_LANGUAGES } from '../graphql/queries';
-import { Page, Language } from '../graphql/types';
-
-export interface GetLanguagesData {
-  languages: Page<Language>;
-}
+import { Language } from '../api/types';
+import { getLanguages } from '../api/client';
+import { useQuery } from '../api/useQuery';
 
 interface LangSelectDialogProps {
   selectedLang: Language | undefined;
@@ -19,12 +15,13 @@ const LangSelectDialog: FC<LangSelectDialogProps> = ({
   onSelectLang,
   onClose,
 }) => {
-  const { loading, error, data } = useQuery<GetLanguagesData>(
-    GQL_GET_LANGUAGES,
+  const { loading, error, data } = useQuery<Language[]>(
+    getLanguages().then((page) => page.items),
   );
+  const languages = data ?? [];
 
+  if (error) return <p>Error!</p>;
   if (loading) return <p>Loading...</p>;
-  if (error || !data) return <p>Error :(</p>;
 
   return (
     <dialog open>
@@ -32,14 +29,12 @@ const LangSelectDialog: FC<LangSelectDialogProps> = ({
         value={selectedLang && selectedLang.id}
         onChange={(event) => {
           onSelectLang(
-            data.languages.items.find(
-              (lang) => lang.id === event.target.value,
-            )!,
+            languages.find((lang) => lang.id === event.target.value)!,
           );
         }}
       >
-        <option selected={!selectedLang} hidden />
-        {data.languages.items.map((lang) => (
+        <option key='' selected={!selectedLang} hidden />
+        {languages.map((lang) => (
           <option key={lang.id} value={lang.id}>
             {lang.name}
           </option>

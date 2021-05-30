@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { ApolloProvider } from '@apollo/client';
 
 import './App.css';
-import { client } from '../graphql/client';
-import { Language } from '../graphql/types';
+import { Language } from '../api/types';
 import LangSelectDialog from './LangSelectDialog';
 import Menu from './Menu';
 import AppSwitch from './AppSwitch';
@@ -18,9 +16,11 @@ function App() {
   const [open, setOpen] = useState(false);
 
   return (
-    <ApolloProvider client={client}>
-      <p>{selectedLang && selectedLang.name}</p>
-      <button onClick={() => setOpen(true)}> change language</button>
+    <div>
+      <Menu setOpen={setOpen} />
+      <main>
+        <AppSwitch selectedLang={selectedLang} />
+      </main>
       {open && (
         <LangSelectDialog
           selectedLang={selectedLang}
@@ -31,10 +31,7 @@ function App() {
           onClose={() => setOpen(false)}
         />
       )}
-
-      <Menu />
-      <AppSwitch selectedLang={selectedLang} />
-    </ApolloProvider>
+    </div>
   );
 }
 

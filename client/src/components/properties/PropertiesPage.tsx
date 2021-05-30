@@ -1,43 +1,58 @@
 import React, { useState, FC } from 'react';
-import { useQuery } from '@apollo/client';
 
-import {
-  GetLanguagePropertiesData,
-  GetLanguagePropertiesVariables,
-  GQL_GET_LANGUAGE_PROPERTIES,
-} from '../../graphql/queries';
-import { Language, Page } from '../../graphql/types';
-import PropertyDialog from './PropertyDialog';
+import '../App.css';
+import { Language, Property } from '../../api/types';
+import { getLanguageProperties } from '../../api/client';
+import { useQuery } from '../../api/useQuery';
+import AddPropertyDialog from './AddPropertyDialog';
+import EditPropertyDialog from './EditPropertyDialog';
 
-interface LangPageProps {
+interface PropertiesPageProps {
   selectedLang: Language | undefined;
 }
 
-const LanguagesPage: FC<LangPageProps> = ({ selectedLang }) => {
+const PropertiesPage: FC<PropertiesPageProps> = ({ selectedLang }) => {
   if (!selectedLang) return <div> </div>;
-  const [open, setOpen] = useState(false);
-  const { loading, error, data } = useQuery<
-    GetLanguagePropertiesData,
-    GetLanguagePropertiesVariables
-  >(GQL_GET_LANGUAGE_PROPERTIES, {
-    variables: {
-      languageId: selectedLang?.id,
-    },
-  });
 
-  if (data) console.log(data.language.definitions);
+  const [open, setOpen] = useState(false);
+  const [openedProperty, setOpenedProperty] = useState<Property | undefined>(
+    undefined,
+  );
+
+  const { loading, error, data } = useQuery<Property[]>(
+    getLanguageProperties(selectedLang.id).then((page) => page.items),
+  );
+  const properties = data ?? [];
+
+  if (error) return <p>Error!</p>;
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div>
-      <h3>Settings to {selectedLang.name}</h3>
-      <button onClick={() => setOpen(true)}>add property</button>
+      <h3>Properties of {selectedLang.name}</h3>
+      <h4>Noun</h4>
+      {properties &&
+        properties.map((property) => (
+          <a key={property.id} onClick={() => setOpenedProperty(property)}>
+            <div>{property.name}</div>
+          </a>
+        ))}
+      <button onClick={() => setOpen(true)} className='submit-button'>
+        Add property
+      </button>
       {open && (
-        <PropertyDialog
+        <AddPropertyDialog
           selectedLang={selectedLang}
           onClose={() => setOpen(false)}
+        />
+      )}
+      {openedProperty && (
+        <EditPropertyDialog
+          property={openedProperty}
+          onClose={() => setOpenedProperty(undefined)}
         />
       )}
     </div>
   );
 };
-export default LanguagesPage;
+export default PropertiesPage;

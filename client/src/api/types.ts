@@ -2,10 +2,16 @@ export interface Entry {
   id: string;
   original: string;
   translation: string;
+  partOfSpeech: PartOfSpeech;
 }
 
 export interface Property {
+  id: string;
   name: string;
+  type: string;
+  partOfSpeech: PartOfSpeech;
+  options?: Record<string, string>;
+  table?: Record<string, string>;
 }
 
 export interface Language {
@@ -14,19 +20,19 @@ export interface Language {
 }
 
 export enum CustomType {
-  Text = 'Text',
-  SingleOption = 'SingleOption',
-  MultiOption = 'MultiOption',
-  Table = 'Table',
+  Text = 'text',
+  SingleOption = 'single',
+  MultiOption = 'multi',
+  Table = 'table',
 }
 
 export enum PartOfSpeech {
-  Noun = 'Noun',
-  Verb = 'Verb',
-  Adj = 'Adj',
-  Adv = 'Adv',
-  Pron = 'Pron',
-  Aux = 'Aux',
+  Noun = 'noun',
+  Verb = 'verb',
+  Adj = 'adj',
+  Adv = 'adv',
+  Pron = 'pron',
+  Aux = 'aux',
 }
 
 export interface Option {
@@ -44,8 +50,8 @@ export interface CustomDefinition {
   name: string;
   type: CustomType;
   partOfSpeech: PartOfSpeech;
-  options?: Option[];
-  table?: TableCell[];
+  options?: Record<string, string>[];
+  table?: Record<string, string>[];
 }
 
 export interface Page<T> {
