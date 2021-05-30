@@ -99,6 +99,76 @@ paths:
                 properties:
                   message:
                     type: string
+    put:
+      tags:
+      - lang
+      summary: Update language by ID
+      operationId: updateLang
+      parameters:
+      - name: langId
+        in: path
+        description: Language ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      requestBody:
+        description: Language parameters
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              required:
+                - name
+        required: true
+      responses:
+        200:
+          description: Updated language
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+        400:
+          description: Language not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    delete:
+      tags:
+      - lang
+      summary: Delete language
+      operationId: deleteLang
+      parameters:
+      - name: langId
+        in: path
+        description: Language ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      responses:
+        200:
+          description: Deleted language
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Language'
+        400:
+          description: Language not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
   /entries:
     get:
       tags:
@@ -207,6 +277,95 @@ paths:
       responses:
         200:
           description: Found entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntryFull'
+        400:
+          description: Entry not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    put:
+      tags:
+      - entry
+      summary: Update entry
+      operationId: updateEntry
+      parameters:
+      - name: entryId
+        in: path
+        description: Entry ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      requestBody:
+        description: Entry parameters
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                original:
+                  type: string
+                translation:
+                  type: string
+                customValues:
+                  type: object
+                  additionalProperties:
+                    type: object
+                    properties:
+                      text:
+                        type: string
+                      option:
+                        type: string
+                        format: uuid
+                      options:
+                        type: array
+                        items:
+                          type: string
+                          format: uuid
+                      table:
+                        type: object
+                        additionalProperties:
+                          type: string
+        required: true
+      responses:
+        200:
+          description: Updated entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntryFull'
+        400:
+          description: Entry not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    delete:
+      tags:
+      - entry
+      summary: Delete entry
+      operationId: deleteEntry
+      parameters:
+      - name: entryId
+        in: path
+        description: Entry ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      responses:
+        200:
+          description: Deleted entry
           content:
             application/json:
               schema:
@@ -337,6 +496,85 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomDefinition'
+  /definitions/{defId}:
+    put:
+      tags:
+      - definition
+      summary: Update definition by ID
+      operationId: updateDef
+      parameters:
+      - name: defId
+        in: path
+        description: Definition ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      requestBody:
+        description: Definition parameters
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                options:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: New option names
+                table:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: New table cell names
+        required: true
+      responses:
+        200:
+          description: Updated definition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomDefinition'
+        400:
+          description: Definition not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    delete:
+      tags:
+      - definition
+      summary: Delete definition
+      operationId: deleteDef
+      parameters:
+      - name: defId
+        in: path
+        description: Definition ID
+        schema:
+          type: string
+          format: uuid
+        required: true
+      responses:
+        200:
+          description: Deleted definition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomDefinition'
+        400:
+          description: Definition not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
   /maint:
     get:
       tags:

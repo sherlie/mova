@@ -6,6 +6,7 @@ export const Identifiers = {
 
     CustomDefFactory: Symbol.for('CustomDefFactory'),
     CustomValueFactory: Symbol.for('CustomValueFactory'),
+    EntryFactory: Symbol.for('EntryFactory'),
 
     LangService: Symbol.for('LangService'),
     EntryService: Symbol.for('EntryService'),

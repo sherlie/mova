@@ -94,7 +94,7 @@ export class MaintenanceController implements Controller {
                 },
             });
 
-            ctx.body = 'ok';
+            ctx.body = 'success';
         });
 
         app.use(router.routes()).use(router.allowedMethods());

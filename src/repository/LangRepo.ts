@@ -39,6 +39,18 @@ export class LangRepo {
         await this.database(TABLE).insert(lang);
     }
 
+    async update(lang: Lang): Promise<void> {
+        await this.database(TABLE)
+            .update({
+                name: lang.name,
+            })
+            .where({ id: lang.id });
+    }
+
+    async delete(langId: LangId): Promise<void> {
+        return await this.database(TABLE).where({ id: langId }).delete();
+    }
+
     async deleteAll(): Promise<void> {
         await this.database(TABLE).delete();
     }

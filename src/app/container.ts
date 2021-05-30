@@ -16,6 +16,7 @@ import { MaintenanceController } from '@controller/MaintenanceController';
 import { CustomDefFactory, CustomDefFactoryImpl } from '@service/CustomDefFactory';
 import { CustomValueFactory, CustomValueFactoryImpl } from '@service/CustomValueFactory';
 import { RestController } from '@controller/rest/RestController';
+import { EntryFactorImpl, EntryFactory } from '@service/EntryFactory';
 
 export const container = new inv.Container({
     defaultScope: 'Singleton',
@@ -29,6 +30,7 @@ container.bind<CustomDefRepo>(Ids.CustomDefRepo).to(CustomDefRepo);
 
 container.bind<CustomDefFactory>(Ids.CustomDefFactory).to(CustomDefFactoryImpl);
 container.bind<CustomValueFactory>(Ids.CustomValueFactory).to(CustomValueFactoryImpl);
+container.bind<EntryFactory>(Ids.EntryFactory).to(EntryFactorImpl);
 
 container.bind<LangService>(Ids.LangService).to(LangServiceImpl);
 container.bind<EntryService>(Ids.EntryService).to(EntryServiceImpl);

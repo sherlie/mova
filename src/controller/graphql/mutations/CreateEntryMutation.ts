@@ -2,7 +2,7 @@ import { AppContext } from '@app/init';
 import { CustomId, OptionId, TableCellId } from '@model/CustomDef';
 import { Entry, PartOfSpeech } from '@model/Entry';
 import { LangId } from '@model/Lang';
-import { CreateCustomValue } from '@service/EntryService';
+import { UpsertCustomValue } from '@service/EntryService';
 import {
     GraphQLFieldConfig,
     GraphQLID,
@@ -104,7 +104,7 @@ export const CreateEntryMutation: GraphQLFieldConfig<
             const { input } = args;
             const customValues =
                 input.customValues &&
-                new Map<CustomId, CreateCustomValue>(
+                new Map<CustomId, UpsertCustomValue>(
                     input.customValues.map(({ id, ...customValue }) => [id, customValue]),
                 );
             const createEntry = {

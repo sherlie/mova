@@ -17,10 +17,10 @@ import {
     TextCustomValue,
 } from '@model/CustomValue';
 import { injectable } from 'inversify';
-import { CreateCustomValue } from './EntryService';
+import { SaveCustomValue } from './EntryService';
 
 export interface CustomValueFactory {
-    build(createCustomValue: CreateCustomValue, customDef: CustomDef): CustomValue;
+    build(createCustomValue: CustomValue, customDef: CustomDef): CustomValue;
 }
 
 const ERR_TEXT_TYPE_NO_TEXT = `Custom value for type '${CustomType.Text}' must contain text`;
@@ -31,7 +31,7 @@ const ERR_TABLE_TYPE_INVALID_CELL = `Custom value for type '${CustomType.Table}'
 
 @injectable()
 export class CustomValueFactoryImpl implements CustomValueFactory {
-    build(createCustomValue: CreateCustomValue, customDef: CustomDef): CustomValue {
+    build(createCustomValue: CustomValue, customDef: CustomDef): CustomValue {
         if (isTextCustomDef(customDef)) {
             return this.buildText(createCustomValue, customDef);
         } else if (isSingleOptionCustomDef(customDef)) {
@@ -44,7 +44,7 @@ export class CustomValueFactoryImpl implements CustomValueFactory {
     }
 
     private buildText(
-        createCustomValue: CreateCustomValue,
+        createCustomValue: SaveCustomValue,
         customDef: TextCustomDef,
     ): TextCustomValue {
         if (!createCustomValue.text) {
@@ -58,7 +58,7 @@ export class CustomValueFactoryImpl implements CustomValueFactory {
     }
 
     private buildSingleOption(
-        createCustomValue: CreateCustomValue,
+        createCustomValue: SaveCustomValue,
         customDef: SingleOptionCustomDef,
     ): SingleOptionCustomValue {
         if (!createCustomValue.option) {
@@ -76,7 +76,7 @@ export class CustomValueFactoryImpl implements CustomValueFactory {
     }
 
     private buildMultiOption(
-        createCustomValue: CreateCustomValue,
+        createCustomValue: SaveCustomValue,
         customDef: MultiOptionCustomDef,
     ): MultiOptionCustomValue {
         if (!createCustomValue.options || !createCustomValue.options.length) {
@@ -103,7 +103,7 @@ export class CustomValueFactoryImpl implements CustomValueFactory {
     }
 
     private buildTable(
-        createCustomValue: CreateCustomValue,
+        createCustomValue: SaveCustomValue,
         customDef: TableCustomDef,
     ): TableCustomValue {
         if (!createCustomValue.table || !Object.keys(createCustomValue.table).length) {

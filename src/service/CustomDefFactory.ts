@@ -11,11 +11,12 @@ import {
     TableCustomDef,
     TextCustomDef,
 } from '@model/CustomDef';
-import { CreateCustomDef } from './CustomDefService';
+import { CreateCustomDef, UpdateCustomDef } from './CustomDefService';
 import { injectable } from 'inversify';
 
 export interface CustomDefFactory {
     build(createCustomDef: CreateCustomDef): CustomDef;
+    buildUpdated(customDef: CustomDef, updateCustomDef: UpdateCustomDef): CustomDef;
 }
 
 const ERR_OPTION_TYPE_NO_OPTIONS = `Custom definition for types '${CustomType.SingleOption}' or '${CustomType.MultiOption}' must contain options`;
@@ -33,6 +34,24 @@ export class CustomDefFactoryImpl implements CustomDefFactory {
             case CustomType.Table:
                 return this.buildTable(createCustomDef);
         }
+    }
+
+    buildUpdated(customDef: CustomDef, updateCustomDef: UpdateCustomDef): CustomDef {
+        if (updateCustomDef.name) {
+            customDef.name = updateCustomDef.name;
+        }
+
+        switch (customDef.type) {
+            case CustomType.SingleOption:
+            case CustomType.MultiOption:
+                this.buildUpdatedOption(customDef, updateCustomDef.options);
+                break;
+            case CustomType.Table:
+                this.buildUpdatedTable(customDef, updateCustomDef.table);
+                break;
+        }
+
+        return customDef;
     }
 
     private buildBase(createCustomDef: CreateCustomDef): BaseCustomDef {
@@ -82,5 +101,37 @@ export class CustomDefFactoryImpl implements CustomDefFactory {
                 table.map((name, i) => [uuidv4(), { index: i, name }]),
             ),
         };
+    }
+
+    buildUpdatedOption(
+        optionCustomDef: SingleOptionCustomDef | MultiOptionCustomDef,
+        updateOptions?: Record<OptionId, string>,
+    ): void {
+        if (updateOptions && Object.keys(updateOptions).length) {
+            for (const [optionId, optionName] of Object.entries<string>(updateOptions)) {
+                if (!optionCustomDef.options.has(optionId)) {
+                    continue;
+                }
+                optionCustomDef.options.set(optionId, optionName);
+            }
+        }
+    }
+
+    buildUpdatedTable(
+        tableCustomDef: TableCustomDef,
+        updateTable?: Record<TableCellId, string>,
+    ): void {
+        if (updateTable && Object.keys(updateTable).length) {
+            for (const [cellId, cellName] of Object.entries<string>(updateTable)) {
+                if (!tableCustomDef.table.has(cellId)) {
+                    continue;
+                }
+                tableCustomDef.table.set(cellId, {
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    ...tableCustomDef.table.get(cellId)!,
+                    name: cellName,
+                });
+            }
+        }
     }
 }

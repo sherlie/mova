@@ -13,12 +13,10 @@ export class EntryDataLoader extends DataLoader<EntryId, Entry> {
         super((entryIds) => this.batchLoad(entryIds));
     }
 
-    private async batchLoad(entryIds: ReadonlyArray<EntryId>): Promise<(Entry | Error)[]> {
+    private async batchLoad(entryIds: ReadonlyArray<EntryId>): Promise<Entry[]> {
         const entries = await this.entryService.getByIds([...entryIds]);
 
-        const entryById = new Map<EntryId, Entry>(entries.map((entry) => [entry.id, entry]));
-        return entryIds.map(
-            (entryId) => entryById.get(entryId) || new Error(`Entry ${entryId} not found`),
-        );
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return entryIds.map((entryId) => entries.get(entryId)!);
     }
 }

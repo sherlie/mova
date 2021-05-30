@@ -7,9 +7,8 @@ import { mapPage, Page, PageScope } from '@repository/paging';
 import { inject, injectable } from 'inversify';
 import { CustomDefService } from './CustomDefService';
 import { CustomValue, TextCustomValue } from '@model/CustomValue';
-import { CustomValueFactory } from './CustomValueFactory';
-import { v4 as uuidv4 } from 'uuid';
-import { LangService } from './LangService';
+import { Maybe } from '@util/types';
+import { EntryFactory } from './EntryFactory';
 
 export interface EntryScope extends PageScope {
     langId: LangId;
@@ -20,33 +19,40 @@ export interface CreateEntry {
     translation: string;
     langId: LangId;
     partOfSpeech: PartOfSpeech;
-    customValues?: Record<CustomId, CreateCustomValue>;
+    customValues?: Record<CustomId, SaveCustomValue>;
 }
 
-export interface CreateCustomValue {
+export interface UpdateEntry {
+    id: EntryId;
+    original?: string;
+    translation?: string;
+    customValues?: Record<CustomId, SaveCustomValue>;
+}
+
+export interface SaveCustomValue {
     text?: string;
     option?: OptionId;
     options?: OptionId[];
     table?: Record<TableCellId, string>;
 }
+
 export interface EntryService {
     getAll(scope: EntryScope): Promise<Page<Entry>>;
     getById(entryId: EntryId): Promise<Entry>;
-    getByIds(entryIds: EntryId[]): Promise<Entry[]>;
+    getByIds(entryIds: EntryId[]): Promise<Map<EntryId, Entry>>;
     create(createEntry: CreateEntry): Promise<Entry>;
+    update(updateEntry: UpdateEntry): Promise<Entry>;
+    delete(entryId: EntryId): Promise<Entry>;
 }
 
 const ERR_ENTRY_NOT_FOUND = 'Entry not found';
-const ERR_INVALID_CUSTOM_DEFS_FOR_ENTRY =
-    'Entry custom value definitions are not valid for the entry';
 
 @injectable()
 export class EntryServiceImpl implements EntryService {
     constructor(
         @inject(Identifiers.EntryRepo) private entryRepo: EntryRepo,
-        @inject(Identifiers.LangService) private langService: LangService,
+        @inject(Identifiers.EntryFactory) private entryFactory: EntryFactory,
         @inject(Identifiers.CustomDefService) private customDefService: CustomDefService,
-        @inject(Identifiers.CustomValueFactory) private customValueFactory: CustomValueFactory,
     ) {}
 
     async getAll(scope: EntryScope): Promise<Page<Entry>> {
@@ -62,36 +68,46 @@ export class EntryServiceImpl implements EntryService {
     async getById(entryId: EntryId): Promise<Entry> {
         const entry = await this.entryRepo.getById(entryId);
         if (!entry) {
-            throw new Error(`${ERR_ENTRY_NOT_FOUND}: [${entryId}]`);
+            throw this.buildInvalidEntryIdsError([entryId]);
         }
 
-        return (await this.setEntriesCustomDefs([entry]))[0];
+        return (await this.withEntriesCustomDefs([entry]))[0];
     }
 
-    async getByIds(entryIds: EntryId[]): Promise<Entry[]> {
-        const entries = await this.entryRepo.getByIds(entryIds);
+    async getByIds(entryIds: EntryId[]): Promise<Map<EntryId, Entry>> {
+        const entriesWithotCustomDefs = await this.entryRepo.getByIds(entryIds);
+        const entries = await this.withEntriesCustomDefs(entriesWithotCustomDefs);
+        const entriesMap = new Map<EntryId, Entry>(entries.map((entry) => [entry.id, entry]));
 
-        return await this.setEntriesCustomDefs(entries);
+        const invalidEntryIds = entryIds.filter((entryId) => !entriesMap.has(entryId));
+        if (invalidEntryIds.length) {
+            throw this.buildInvalidEntryIdsError(invalidEntryIds);
+        }
+
+        return entriesMap;
     }
 
     async create(createEntry: CreateEntry): Promise<Entry> {
-        await this.langService.getById(createEntry.langId);
-
-        const entry: Entry = {
-            id: uuidv4(),
-            original: createEntry.original,
-            translation: createEntry.translation,
-            langId: createEntry.langId,
-            partOfSpeech: createEntry.partOfSpeech,
-            customValues: await this.buildCustomValues(createEntry),
-        };
-
+        const entry = await this.entryFactory.build(createEntry);
         await this.entryRepo.create(entry);
 
         return entry;
     }
 
-    private async setEntriesCustomDefs(entries: EntryWithoutCustomDefs[]): Promise<Entry[]> {
+    async update(updateEntry: UpdateEntry): Promise<Entry> {
+        const entry = await this.getById(updateEntry.id);
+        const updatedEntry = await this.entryFactory.buildUpdated(entry, updateEntry);
+        await this.entryRepo.update(updatedEntry);
+        return updatedEntry;
+    }
+
+    async delete(entryId: EntryId): Promise<Entry> {
+        const entry = await this.getById(entryId);
+        await this.entryRepo.delete(entryId);
+        return entry;
+    }
+
+    private async withEntriesCustomDefs(entries: EntryWithoutCustomDefs[]): Promise<Entry[]> {
         const entryCustomMaps = new Map<EntryId, Map<CustomId, CustomValueWithoutDef>>(
             entries
                 .filter((entry) => entry.customValues)
@@ -101,21 +117,18 @@ export class EntryServiceImpl implements EntryService {
         const customDefIds: CustomId[] = Array.from(entryCustomMaps.values()).flatMap((customMap) =>
             Array.from(customMap.keys()),
         );
-        const customDefs = await this.customDefService.getByIds(customDefIds);
-        const customDefsMap = new Map<CustomId, CustomDef>(
-            customDefs.map((customDef) => [customDef.id, customDef]),
-        );
+        const customDefsMap = await this.customDefService.getByIds(customDefIds);
 
         return entries.map((entry) => ({
             ...entry,
-            customValues: this.setEntryCustomValuesCustomDefs(entry.customValues, customDefsMap),
+            customValues: this.withEntryCustomDefs(entry.customValues, customDefsMap),
         }));
     }
 
-    private setEntryCustomValuesCustomDefs(
-        customValues: Map<CustomId, CustomValueWithoutDef> | undefined,
+    private withEntryCustomDefs(
+        customValues: Maybe<Map<CustomId, CustomValueWithoutDef>>,
         customDefs: Map<CustomId, CustomDef>,
-    ): Map<CustomId, CustomValue> | undefined {
+    ): Maybe<Map<CustomId, CustomValue>> {
         if (!customValues) {
             return;
         }
@@ -132,58 +145,11 @@ export class EntryServiceImpl implements EntryService {
         );
     }
 
-    private async buildCustomValues(
-        createEntry: CreateEntry,
-    ): Promise<Map<CustomId, CustomValue> | undefined> {
-        if (!createEntry.customValues || !Object.keys(createEntry.customValues).length) {
-            return;
-        }
-
-        const customDefsMap = await this.getCustomDefs(Object.keys(createEntry.customValues));
-
-        const invalidCustomIdsForEntry = Array.from(customDefsMap.values())
-            .filter(
-                (customDef) =>
-                    customDef.langId !== createEntry.langId ||
-                    customDef.partOfSpeech !== createEntry.partOfSpeech,
-            )
-            .map((customDef) => customDef.id);
-        if (invalidCustomIdsForEntry.length) {
-            throw this.buildInvalidCustomIdsError(invalidCustomIdsForEntry);
-        }
-
-        const customValuesMap = new Map<CustomId, CustomValue>(
-            Object.entries<CreateCustomValue>(createEntry.customValues).map(
-                ([customId, createCustomValue]) => [
-                    customId,
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    this.customValueFactory.build(createCustomValue, customDefsMap.get(customId)!),
-                ],
-            ),
-        );
-
-        return customValuesMap;
-    }
-
-    private async getCustomDefs(customIds: CustomId[]): Promise<Map<CustomId, CustomDef>> {
-        const customDefs = await this.customDefService.getByIds(customIds);
-        const customDefsMap: Map<CustomId, CustomDef> = new Map(
-            customDefs.map((customDef) => [customDef.id, customDef]),
-        );
-
-        const invalidCustomIds = customIds.filter((customId) => !customDefsMap.has(customId));
-        if (invalidCustomIds.length) {
-            throw this.buildInvalidCustomIdsError(invalidCustomIds);
-        }
-
-        return customDefsMap;
-    }
-
-    private buildInvalidCustomIdsError(invalidCustomIds: CustomId[]): Error {
-        const invalidCustomIdsFormatted = invalidCustomIds
-            .map((customId) => `[${customId}]`)
+    private buildInvalidEntryIdsError(invalidEntryIds: EntryId[]): Error {
+        const invalidEntryIdsFormatted = invalidEntryIds
+            .map((entryId) => `[${entryId}]`)
             .join(', ');
 
-        return new Error(`${ERR_INVALID_CUSTOM_DEFS_FOR_ENTRY}: ${invalidCustomIdsFormatted}`);
+        return new Error(`${ERR_ENTRY_NOT_FOUND}: ${invalidEntryIdsFormatted}`);
     }
 }

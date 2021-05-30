@@ -68,6 +68,20 @@ export class EntryRepo {
         });
     }
 
+    async update(entry: Entry): Promise<Entry> {
+        return await this.database(TABLE)
+            .where({ id: entry.id })
+            .update({
+                original: entry.original,
+                translation: entry.translation,
+                custom: this.serializeCustom(entry.customValues),
+            });
+    }
+
+    async delete(entryId: EntryId): Promise<void> {
+        return await this.database(TABLE).where({ id: entryId }).delete();
+    }
+
     private mapEntryRecordToEntry(entryRecord: EntryRecord): EntryWithoutCustomDefs {
         return {
             id: entryRecord.id,

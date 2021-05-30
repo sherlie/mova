@@ -12,6 +12,7 @@ import {
 } from '@model/CustomDef';
 import { Identifiers } from '@app/identifiers';
 import { mapPage, page, Page, PageScope } from './paging';
+import { Maybe } from '@util/types';
 
 const TABLE = 'custom_defs';
 
@@ -65,6 +66,12 @@ export class CustomDefRepo {
         );
     }
 
+    async getById(customId: CustomId): Promise<Maybe<CustomDef>> {
+        const customDefRecord = await this.database(TABLE).where('id', customId).first();
+
+        return customDefRecord ? this.mapCustomDefRecordToCustomDef(customDefRecord) : undefined;
+    }
+
     async getByIds(customIds: CustomId[]): Promise<CustomDef[]> {
         const customDefRecords = await this.database(TABLE).whereIn('id', customIds);
 
@@ -82,6 +89,19 @@ export class CustomDefRepo {
             pos: customDef.partOfSpeech,
             props: this.serializeProps(customDef),
         });
+    }
+
+    async update(customDef: CustomDef): Promise<CustomDefRecord> {
+        return await this.database(TABLE)
+            .where({ id: customDef.id })
+            .update({
+                name: customDef.name,
+                props: this.serializeProps(customDef),
+            });
+    }
+
+    async delete(customId: CustomId): Promise<void> {
+        return await this.database(TABLE).where({ id: customId }).delete();
     }
 
     private mapCustomDefRecordToCustomDef(customDefRecord: CustomDefRecord): CustomDef {

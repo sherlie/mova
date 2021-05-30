@@ -6,10 +6,16 @@ import * as yamlJs from 'yamljs';
 import { Controller } from '@controller/Controller';
 import { App, AppContext } from '@app/init';
 import { apiResponse } from './apiResponse';
-import { createDef, getDefs } from './definitions';
-import { getEntries, getEntry, getEntryDefs } from './entries';
-import { getLangs, getLang, createLang } from './langs';
-import { createEntry } from './entries/createEntry';
+import { createDef, deleteDef, getDefs, updateDef } from './definitions';
+import {
+    createEntry,
+    deleteEntry,
+    getEntries,
+    getEntry,
+    getEntryDefs,
+    updateEntry,
+} from './entries';
+import { getLangs, getLang, createLang, updateLang, deleteLang } from './langs';
 
 @injectable()
 export class RestController implements Controller {
@@ -19,15 +25,21 @@ export class RestController implements Controller {
         router.use(apiResponse);
 
         router.get('/langs', getLangs);
-        router.get('/langs/:id', getLang);
         router.post('/langs', createLang);
+        router.get('/langs/:id', getLang);
+        router.put('/langs/:id', updateLang);
+        router.del('/langs/:id', deleteLang);
 
         router.get('/definitions', getDefs);
         router.post('/definitions', createDef);
+        router.put('/definitions/:id', updateDef);
+        router.del('/definitions/:id', deleteDef);
 
         router.get('/entries', getEntries);
-        router.get('/entries/:id', getEntry);
         router.post('/entries', createEntry);
+        router.get('/entries/:id', getEntry);
+        router.put('/entries/:id', updateEntry);
+        router.del('/entries/:id', deleteEntry);
         router.get('/entries/:id/definitions', getEntryDefs);
 
         app.use(router.routes());

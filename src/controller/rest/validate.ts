@@ -10,15 +10,15 @@ export interface ValidationSchema {
 export function validate(ctx: Context, config: ValidationSchema): any {
     let input = {};
     if (config.path) {
-        input = { ...validateSchema(ctx.params, config.path) };
+        input = { ...input, ...validateSchema(ctx.params, config.path) };
     }
 
     if (config.query) {
-        input = { ...validateSchema(ctx.request.query, config.query) };
+        input = { ...input, ...validateSchema(ctx.request.query, config.query) };
     }
 
     if (config.body) {
-        input = { ...validateSchema(ctx.request.body, config.body) };
+        input = { ...input, ...validateSchema(ctx.request.body, config.body) };
     }
 
     return input;

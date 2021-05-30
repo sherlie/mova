@@ -10,12 +10,11 @@ export class LangDataLoader extends DataLoader<LangId, Lang> {
         super((langIds) => this.batchLoad(langIds));
     }
 
-    private async batchLoad(langIds: ReadonlyArray<LangId>): Promise<(Lang | Error)[]> {
+    private async batchLoad(langIds: ReadonlyArray<LangId>): Promise<Lang[]> {
         const langs = await this.langService.getByIds([...langIds]);
-
-        const langById = new Map<LangId, Lang>(langs.map((lang) => [lang.id, lang]));
         return langIds.map(
-            (langId) => langById.get(langId) || new Error(`Lang ${langId} not found`),
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            (langId) => langs.get(langId)!,
         );
     }
 }
