@@ -3,6 +3,7 @@ export interface Entry {
   original: string;
   translation: string;
   partOfSpeech: PartOfSpeech;
+  customValues: Record<string, PropertyValue>;
 }
 
 export interface Property {
@@ -44,16 +45,13 @@ export interface TableCell {
   id: string;
   name: string;
 }
-
-export interface CustomDefinition {
-  id: string;
-  name: string;
-  type: CustomType;
-  partOfSpeech: PartOfSpeech;
-  options?: Record<string, string>[];
-  table?: Record<string, string>[];
+export interface PropertyValue {
+  definition: Property;
+  text?: string;
+  option?: string;
+  options?: string[];
+  table: Record<string, string>;
 }
-
 export interface Page<T> {
   items: T[];
   hasMore: boolean;

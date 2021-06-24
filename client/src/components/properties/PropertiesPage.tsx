@@ -19,7 +19,7 @@ const PropertiesPage: FC<PropertiesPageProps> = ({ selectedLang }) => {
     undefined,
   );
 
-  const { loading, error, data } = useQuery<Property[]>(
+  const { loading, error, data } = useQuery<Property[]>(() =>
     getLanguageProperties(selectedLang.id).then((page) => page.items),
   );
   const properties = data ?? [];
@@ -31,14 +31,20 @@ const PropertiesPage: FC<PropertiesPageProps> = ({ selectedLang }) => {
     <div>
       <h3>Properties of {selectedLang.name}</h3>
       <h4>Noun</h4>
-      {properties &&
-        properties.map((property) => (
-          <a key={property.id} onClick={() => setOpenedProperty(property)}>
-            <div>{property.name}</div>
-          </a>
-        ))}
-      <button onClick={() => setOpen(true)} className='submit-button'>
-        Add property
+      <div className='grid-container-2-equal'>
+        <div className='grid-item'>
+          {properties &&
+            properties.map((property) => (
+              <div className='entry-row grid-item' key={property.id}>
+                <a onClick={() => setOpenedProperty(property)}>
+                  <div>{property.name}</div>
+                </a>
+              </div>
+            ))}
+        </div>
+      </div>
+      <button className='round-button' onClick={() => setOpen(true)}>
+        <i className='fas fa-plus'></i>
       </button>
       {open && (
         <AddPropertyDialog
