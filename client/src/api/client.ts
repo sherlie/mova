@@ -7,11 +7,25 @@ export async function getLanguages(): Promise<Page<Language>> {
   return response.json();
 }
 
-export async function getLanguageEntries(langId: string): Promise<Page<Entry>> {
-  const response = await fetch(`${API}/entries?langId=${langId}`);
+export async function getLanguageEntries(
+  langId: string,
+  start = 0,
+  limit = 10,
+): Promise<Page<Entry>> {
+  const response = await fetch(
+    `${API}/entries?langId=${langId}&start=${start}&limit=${limit}`,
+  );
   return response.json();
 }
 
+export async function getEntryProperties(entryId: string): Promise<Property[]> {
+  const response = await fetch(`${API}/entries/${entryId}/definitions`);
+  return response.json();
+}
+export async function getEntry(entryId: string): Promise<Entry> {
+  const response = await fetch(`${API}/entries/${entryId}`);
+  return response.json();
+}
 export async function getLanguageProperties(
   langId: string,
   partOfSpeech?: PartOfSpeech,

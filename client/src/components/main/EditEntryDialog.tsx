@@ -12,25 +12,29 @@ import {
   Language,
   PartOfSpeech,
   Property,
+  PropertyValue,
 } from '../../api/types';
 import { useMutation } from '../../api/useMutation';
 import { useQuery } from '../../api/useQuery';
 import '../App.css';
 
-interface AddEntryDialogProps {
+interface EditEntryDialogProps {
   selectedLang: Language;
+  entry: Entry;
   onAddEntry: (entry: Entry) => void;
   onClose: () => void;
+  defs: Property[] | null;
+  customValues: Record<string, PropertyValue>;
 }
 
 interface PropertiesFormProps {
-  pos: PartOfSpeech;
-  selectedLang: Language;
   propValues: CreateEntryPropertyValues;
   onPropValueChange: (
     propId: string,
     propValue: CreateEntryPropertyValue,
   ) => void;
+  defs: Property[];
+  customValues: Record<string, PropertyValue>;
 }
 
 interface PropertyRowProps {
@@ -87,20 +91,14 @@ const PropertyRow: FC<PropertyRowProps> = ({
 };
 
 const PropertiesForm: FC<PropertiesFormProps> = ({
-  pos,
-  selectedLang,
   propValues,
   onPropValueChange,
+  defs,
+  customValues,
 }) => {
-  const { data: propertiesData } = useQuery<Property[]>(() =>
-    getLanguageProperties(selectedLang.id).then((page) => page.items),
-  );
-  const properties = propertiesData ?? [];
-  const posProperties = properties.filter((prop) => prop.partOfSpeech === pos);
-
   return (
     <div>
-      {posProperties.map((prop) => (
+      {defs.map((prop) => (
         <PropertyRow
           key={prop.id}
           prop={prop}
@@ -114,25 +112,26 @@ const PropertiesForm: FC<PropertiesFormProps> = ({
   );
 };
 
-const AddEntryDialog: FC<AddEntryDialogProps> = ({
+const EditEntryDialog: FC<EditEntryDialogProps> = ({
   selectedLang,
   onAddEntry,
+  entry,
   onClose,
+  defs,
+  customValues,
 }) => {
-  const [original, setOriginal] = useState('');
-  const [translation, setTranslation] = useState('');
-  const [pos, setPos] = useState<PartOfSpeech>(PartOfSpeech.Noun);
+  const [translation, setTranslation] = useState(entry.translation);
   const [
     propertyValues,
     setPropertyValues,
-  ] = useState<CreateEntryPropertyValues>({});
+  ] = useState<CreateEntryPropertyValues>(customValues);
 
   const [addEntry, { loading }] = useMutation(() =>
     createEntry({
-      original,
+      original: entry.original,
       translation,
       langId: selectedLang.id,
-      partOfSpeech: pos.toLowerCase() as PartOfSpeech,
+      partOfSpeech: entry.partOfSpeech.toLowerCase() as PartOfSpeech,
       customValues: propertyValues,
     }),
   );
@@ -157,17 +156,15 @@ const AddEntryDialog: FC<AddEntryDialogProps> = ({
           <a className='topright' onClick={onClose}>
             <i className='fas fa-window-close'></i>
           </a>
-          <h3>Add New Entry</h3>
+          <h3>Edit Entry</h3>
         </div>
         <p>
           <label>ENTRY (IN {selectedLang.name.toUpperCase()})</label> <br />
-          <input
-            className='basic-slide'
-            name='original'
-            placeholder='word or phrase'
-            value={original}
-            onChange={(event) => setOriginal(event.target.value)}
-          />
+          <input disabled className='basic-slide' value={entry.original} />
+        </p>
+        <p>
+          <label>PART OF SPEECH</label> <br />
+          <input disabled className='basic-slide' value={entry.partOfSpeech} />
         </p>
         <p>
           <label>TRANSLATION</label> <br />
@@ -179,30 +176,18 @@ const AddEntryDialog: FC<AddEntryDialogProps> = ({
             onChange={(event) => setTranslation(event.target.value)}
           />
         </p>
-        <p>
-          <label>PART OF SPEECH</label> <br />
-          <select
-            className='basic-slide wide'
-            onChange={(event) => setPos(event.target.value as PartOfSpeech)}
-            defaultValue={pos}
-          >
-            {Object.entries(PartOfSpeech).map(([posName, posValue]) => (
-              <option key={posValue} value={posValue}>
-                {posName}
-              </option>
-            ))}
-          </select>
-        </p>
-        <div>
-          <PropertiesForm
-            pos={pos}
-            selectedLang={selectedLang}
-            propValues={propertyValues}
-            onPropValueChange={(propId, propValue) =>
-              setPropertyValues({ ...propertyValues, [propId]: propValue })
-            }
-          />
-        </div>
+        {defs && (
+          <div>
+            <PropertiesForm
+              propValues={propertyValues}
+              defs={defs}
+              onPropValueChange={(propId, propValue) =>
+                setPropertyValues({ ...propertyValues, [propId]: propValue })
+              }
+              customValues={customValues}
+            />
+          </div>
+        )}
         <button className='confirm-button' onClick={() => handleSubmit()}>
           SUBMIT
         </button>
@@ -211,4 +196,4 @@ const AddEntryDialog: FC<AddEntryDialogProps> = ({
   );
 };
 
-export default AddEntryDialog;
+export default EditEntryDialog;

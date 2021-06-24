@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 
 import EntryRow from './EntryRow';
 import { Entry } from '../../api/types';
@@ -11,7 +11,6 @@ interface EntryListProps {
 
 const EntryList: FC<EntryListProps> = ({ entries, setOpenedEntry }) => {
   if (!entries) return <div></div>;
-  console.log(entries);
 
   return (
     <div>

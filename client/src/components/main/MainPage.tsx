@@ -1,12 +1,15 @@
 import React, { FC, useState } from 'react';
 
 import { useQuery } from '../../api/useQuery';
-import { Language, Entry } from '../../api/types';
+import { Language, Entry, Page } from '../../api/types';
 import EntryList from './EntryList';
 import EntryDetailed from './EntryDetailed';
 import '../App.css';
 import AddEntryDialog from './AddEntryDialog';
 import { getLanguageEntries } from '../../api/client';
+import { useEffect } from 'react';
+
+const ENTRIES_PER_PAGE = 10;
 
 interface MainPageProps {
   selectedLang: Language | undefined;
@@ -17,11 +20,27 @@ const MainPage: FC<MainPageProps> = ({ selectedLang }) => {
 
   const [open, setOpen] = useState(false);
   const [openedEntry, setOpenedEntry] = useState<Entry | undefined>(undefined);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [lastPage, setLastPage] = useState(1);
+  const [entries, setEntries] = useState<Entry[]>([]);
 
-  const { loading, error, data } = useQuery<Entry[]>(
-    getLanguageEntries(selectedLang.id).then((page) => page.items),
+  const { loading, error, data: entriesPage } = useQuery<Page<Entry>>(
+    () =>
+      getLanguageEntries(
+        selectedLang.id,
+        (lastPage - 1) * ENTRIES_PER_PAGE,
+        ENTRIES_PER_PAGE,
+      ),
+    {
+      deps: [selectedLang.id, lastPage],
+    },
   );
-  const entries = data ?? [];
+
+  useEffect(() => {
+    if (entriesPage) {
+      setEntries([...entries, ...entriesPage.items]);
+    }
+  }, [entriesPage]);
 
   if (error) return <p>Error!</p>;
   if (loading) return <p>Loading...</p>;
@@ -43,18 +62,30 @@ const MainPage: FC<MainPageProps> = ({ selectedLang }) => {
       </div>
 
       <div className='grid-container-2-equal'>
-        <div>
+        <div className='grid-item'>
           <EntryList entries={entries} setOpenedEntry={setOpenedEntry} />
+          {entriesPage && entriesPage.hasMore && (
+            <button
+              className='confirm-button'
+              onClick={() => setLastPage(lastPage + 1)}
+            >
+              Load More
+            </button>
+          )}
         </div>
         {openedEntry && (
           <div className='grid-item entry-detailed'>
             <EntryDetailed
-              entry={openedEntry}
+              selectedLang={selectedLang}
+              entryId={openedEntry.id}
               onClose={() => setOpenedEntry(undefined)}
+              openEdit={openEdit}
+              setOpenEdit={setOpenEdit}
             />
           </div>
         )}
       </div>
+
       <button className='round-button' onClick={() => setOpen(true)}>
         <i className='fas fa-plus'></i>
       </button>

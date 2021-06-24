@@ -14,7 +14,7 @@ const schema: ValidationSchema = {
     query: Joi.object({
         langId: Joi.string().required(),
         partOfSpeech: Joi.valid(...Object.values(PartOfSpeech)).allow(null),
-        start: Joi.number().integer().positive().default(0),
+        start: Joi.number().integer().positive().allow(0).default(0),
         limit: Joi.number().integer().positive().default(DEFAULT_LIMIT).max(MAX_LIMIT),
     }),
 };

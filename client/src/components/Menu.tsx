@@ -29,6 +29,12 @@ const Menu: FC<MenuProps> = ({ setOpen }) => {
             <span className='navbar-text'>Language</span>
           </a>
         </li>
+        <li key='settings' className='navbar-item'>
+          <a className='navbar-link'>
+            <i className='fa fa-cogs' aria-hidden='true'></i>
+            <span className='navbar-text'>Settings</span>
+          </a>
+        </li>
       </ul>
     </nav>
   );
