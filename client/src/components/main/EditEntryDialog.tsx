@@ -3,7 +3,6 @@ import {
   createEntry,
   CreateEntryPropertyValue,
   CreateEntryPropertyValues,
-  getLanguageProperties,
 } from '../../api/client';
 
 import {
@@ -15,7 +14,6 @@ import {
   PropertyValue,
 } from '../../api/types';
 import { useMutation } from '../../api/useMutation';
-import { useQuery } from '../../api/useQuery';
 import '../App.css';
 
 interface EditEntryDialogProps {
@@ -26,91 +24,6 @@ interface EditEntryDialogProps {
   defs: Property[] | null;
   customValues: Record<string, PropertyValue>;
 }
-
-interface PropertiesFormProps {
-  propValues: CreateEntryPropertyValues;
-  onPropValueChange: (
-    propId: string,
-    propValue: CreateEntryPropertyValue,
-  ) => void;
-  defs: Property[];
-  customValues: Record<string, PropertyValue>;
-}
-
-interface PropertyRowProps {
-  prop: Property;
-  propValue: CreateEntryPropertyValue;
-  onPropValueChange: (propValue: CreateEntryPropertyValue) => void;
-}
-
-const PropertyRow: FC<PropertyRowProps> = ({
-  prop,
-  propValue,
-  onPropValueChange,
-}) => {
-  return (
-    <p key={prop.id}>
-      <label className='label'>{prop.name.toUpperCase()}</label> <br />
-      {prop.type === 'single' && prop.options && (
-        <select
-          className='basic-slide'
-          onChange={(event) => {
-            onPropValueChange({ option: event.target.value });
-          }}
-          value={propValue?.option}
-        >
-          <option value='' disabled>
-            Select
-          </option>
-          {Object.entries(prop.options).map(([key, opt]) => (
-            <option key={key}>{opt}</option>
-          ))}
-        </select>
-      )}
-      {prop.type === 'multi' && prop.options && (
-        <>
-          {Object.entries(prop.options).map(([key, opt]) => (
-            <>
-              <input key={key} type='checkbox' className='basic-slide' />
-              <label>{opt}</label>
-            </>
-          ))}
-        </>
-      )}
-      {prop.type === CustomType.Text && (
-        <textarea
-          className='basic-slide'
-          onChange={(event) => {
-            onPropValueChange({ text: event.target.value });
-          }}
-          value={propValue?.text}
-        />
-      )}
-    </p>
-  );
-};
-
-const PropertiesForm: FC<PropertiesFormProps> = ({
-  propValues,
-  onPropValueChange,
-  defs,
-  customValues,
-}) => {
-  return (
-    <div>
-      {defs.map((prop) => (
-        <PropertyRow
-          key={prop.id}
-          prop={prop}
-          propValue={propValues[prop.id]}
-          onPropValueChange={(propValue) =>
-            onPropValueChange(prop.id, propValue)
-          }
-        />
-      ))}
-    </div>
-  );
-};
 
 const EditEntryDialog: FC<EditEntryDialogProps> = ({
   selectedLang,
@@ -184,7 +97,6 @@ const EditEntryDialog: FC<EditEntryDialogProps> = ({
               onPropValueChange={(propId, propValue) =>
                 setPropertyValues({ ...propertyValues, [propId]: propValue })
               }
-              customValues={customValues}
             />
           </div>
         )}
@@ -193,6 +105,89 @@ const EditEntryDialog: FC<EditEntryDialogProps> = ({
         </button>
       </dialog>
     </div>
+  );
+};
+
+interface PropertiesFormProps {
+  propValues: CreateEntryPropertyValues;
+  onPropValueChange: (
+    propId: string,
+    propValue: CreateEntryPropertyValue,
+  ) => void;
+  defs: Property[];
+}
+
+const PropertiesForm: FC<PropertiesFormProps> = ({
+  propValues,
+  onPropValueChange,
+  defs,
+}) => {
+  return (
+    <div>
+      {defs.map((prop) => (
+        <PropertyRow
+          key={prop.id}
+          prop={prop}
+          propValue={propValues[prop.id]}
+          onPropValueChange={(propValue) =>
+            onPropValueChange(prop.id, propValue)
+          }
+        />
+      ))}
+    </div>
+  );
+};
+
+interface PropertyRowProps {
+  prop: Property;
+  propValue: CreateEntryPropertyValue;
+  onPropValueChange: (propValue: CreateEntryPropertyValue) => void;
+}
+
+const PropertyRow: FC<PropertyRowProps> = ({
+  prop,
+  propValue,
+  onPropValueChange,
+}) => {
+  return (
+    <p key={prop.id}>
+      <label className='label'>{prop.name.toUpperCase()}</label> <br />
+      {prop.type === 'single' && prop.options && (
+        <select
+          className='basic-slide'
+          onChange={(event) => {
+            onPropValueChange({ option: event.target.value });
+          }}
+          value={propValue?.option}
+        >
+          <option value='' disabled>
+            Select
+          </option>
+          {Object.entries(prop.options).map(([key, opt]) => (
+            <option key={key}>{opt}</option>
+          ))}
+        </select>
+      )}
+      {prop.type === 'multi' && prop.options && (
+        <>
+          {Object.entries(prop.options).map(([key, opt]) => (
+            <>
+              <input key={key} type='checkbox' className='basic-slide' />
+              <label>{opt}</label>
+            </>
+          ))}
+        </>
+      )}
+      {prop.type === CustomType.Text && (
+        <textarea
+          className='basic-slide'
+          onChange={(event) => {
+            onPropValueChange({ text: event.target.value });
+          }}
+          value={propValue?.text}
+        />
+      )}
+    </p>
   );
 };
 
