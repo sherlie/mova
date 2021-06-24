@@ -7,7 +7,6 @@ import EntryDetailed from './EntryDetailed';
 import '../App.css';
 import AddEntryDialog from './AddEntryDialog';
 import { getLanguageEntries } from '../../api/client';
-import Scroll from '../Scroll';
 import { useEffect } from 'react';
 
 const ENTRIES_PER_PAGE = 10;
@@ -66,11 +65,12 @@ const MainPage: FC<MainPageProps> = ({ selectedLang }) => {
         <div className='grid-item'>
           <EntryList entries={entries} setOpenedEntry={setOpenedEntry} />
           {entriesPage && entriesPage.hasMore && (
-            <Scroll
-              pageSize={ENTRIES_PER_PAGE}
-              lastPage={lastPage}
-              setLastPage={setLastPage}
-            />
+            <button
+              className='confirm-button'
+              onClick={() => setLastPage(lastPage + 1)}
+            >
+              Load More
+            </button>
           )}
         </div>
         {openedEntry && (
