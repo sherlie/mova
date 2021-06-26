@@ -1,15 +1,15 @@
-import React, { useState, FC, useEffect, useRef } from 'react';
+import React, { useState, FC } from 'react';
 import {
-  createEntry,
   CreateEntryPropertyValue,
   CreateEntryPropertyValues,
+  updateEntry,
 } from '../../api/client';
 
 import {
-  CustomType,
+  PropertyType,
   Entry,
   Language,
-  PartOfSpeech,
+  partOfSpeechLabel,
   Property,
   PropertyValue,
 } from '../../api/types';
@@ -19,7 +19,7 @@ import '../App.css';
 interface EditEntryDialogProps {
   selectedLang: Language;
   entry: Entry;
-  onAddEntry: (entry: Entry) => void;
+  onEditEntry: (entry: Entry) => void;
   onClose: () => void;
   defs: Property[] | null;
   customValues: Record<string, PropertyValue>;
@@ -27,32 +27,36 @@ interface EditEntryDialogProps {
 
 const EditEntryDialog: FC<EditEntryDialogProps> = ({
   selectedLang,
-  onAddEntry,
+  onEditEntry,
   entry,
   onClose,
   defs,
   customValues,
 }) => {
+  const [original, setOriginal] = useState(entry.original);
   const [translation, setTranslation] = useState(entry.translation);
   const [
     propertyValues,
     setPropertyValues,
   ] = useState<CreateEntryPropertyValues>(customValues);
 
-  const [addEntry, { loading }] = useMutation(() =>
-    createEntry({
-      original: entry.original,
-      translation,
-      langId: selectedLang.id,
-      partOfSpeech: entry.partOfSpeech.toLowerCase() as PartOfSpeech,
-      customValues: propertyValues,
-    }),
+  const [editEntry, { loading }] = useMutation(() =>
+    updateEntry(
+      {
+        original: original,
+        translation,
+        langId: selectedLang.id,
+        partOfSpeech: entry.partOfSpeech,
+        customValues: propertyValues,
+      },
+      entry.id,
+    ),
   );
 
   const handleSubmit = async () => {
-    const result = await addEntry();
+    const result = await editEntry();
     if (result) {
-      onAddEntry(result);
+      onEditEntry(result);
     }
     onClose();
   };
@@ -73,11 +77,13 @@ const EditEntryDialog: FC<EditEntryDialogProps> = ({
         </div>
         <p>
           <label>ENTRY (IN {selectedLang.name.toUpperCase()})</label> <br />
-          <input disabled className='basic-slide' value={entry.original} />
-        </p>
-        <p>
-          <label>PART OF SPEECH</label> <br />
-          <input disabled className='basic-slide' value={entry.partOfSpeech} />
+          <input
+            className='basic-slide'
+            name='original'
+            placeholder='word or phrase'
+            value={original}
+            onChange={(event) => setOriginal(event.target.value)}
+          />
         </p>
         <p>
           <label>TRANSLATION</label> <br />
@@ -88,6 +94,10 @@ const EditEntryDialog: FC<EditEntryDialogProps> = ({
             value={translation}
             onChange={(event) => setTranslation(event.target.value)}
           />
+        </p>
+        <p>
+          <label>PART OF SPEECH: {partOfSpeechLabel(entry.partOfSpeech)}</label>{' '}
+          <br />
         </p>
         {defs && (
           <div>
@@ -160,11 +170,10 @@ const PropertyRow: FC<PropertyRowProps> = ({
           }}
           value={propValue?.option}
         >
-          <option value='' disabled>
-            Select
-          </option>
           {Object.entries(prop.options).map(([key, opt]) => (
-            <option key={key}>{opt}</option>
+            <option key={key} value={key}>
+              {opt}
+            </option>
           ))}
         </select>
       )}
@@ -172,13 +181,18 @@ const PropertyRow: FC<PropertyRowProps> = ({
         <>
           {Object.entries(prop.options).map(([key, opt]) => (
             <>
-              <input key={key} type='checkbox' className='basic-slide' />
+              <input
+                key={key}
+                value={key}
+                type='checkbox'
+                className='basic-slide'
+              />
               <label>{opt}</label>
             </>
           ))}
         </>
       )}
-      {prop.type === CustomType.Text && (
+      {prop.type === PropertyType.Text && (
         <textarea
           className='basic-slide'
           onChange={(event) => {

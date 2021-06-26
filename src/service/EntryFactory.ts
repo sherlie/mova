@@ -49,7 +49,7 @@ export class EntryFactorImpl implements EntryFactory {
         if (updateEntry.translation) {
             entry.translation = updateEntry.translation;
         }
-        if (entry.customValues) {
+        if (updateEntry.customValues) {
             const newCustomValues = await this.buildCustomValues(entry, updateEntry.customValues);
             const combinedCustomValues = new Map([
                 ...(entry.customValues ?? new Map()),

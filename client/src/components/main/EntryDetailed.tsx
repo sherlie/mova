@@ -8,58 +8,65 @@ import EditEntryDialog from './EditEntryDialog';
 
 interface EntryDetailedProps {
   selectedLang: Language;
-  entryId: string;
+  entry: Entry;
   onClose: () => void;
   openEdit: boolean;
   setOpenEdit: (open: boolean) => void;
+  onEditEntry: (entry: Entry) => void;
 }
 
 const EntryDetailed: FC<EntryDetailedProps> = ({
   selectedLang,
-  entryId,
+  entry,
   onClose,
   openEdit,
   setOpenEdit,
+  onEditEntry,
 }) => {
   const { data: defs } = useQuery<Property[]>(
-    () => getEntryProperties(entryId),
-    { deps: [entryId] },
+    () => getEntryProperties(entry.id),
+    { deps: [entry.id] },
   );
-  const { data: entry } = useQuery<Entry>(() => getEntry(entryId), {
-    deps: [entryId],
+  const { data: entryFull } = useQuery<Entry>(() => getEntry(entry.id), {
+    deps: [entry],
   });
-  if (entry === null) return <div />;
+  if (entryFull === null) return <div />;
   return (
     <div className='container entry-detailed '>
       <a className='topright'>
         <i
           className='fa fa-pencil-square'
+          style={{ marginRight: '2px' }}
           onClick={() => setOpenEdit(true)}
         ></i>
         <i className='fas fa-window-close' onClick={onClose}></i>
       </a>
-      <span className='word-title'>{entry.original}</span>
-      <i>({entry.partOfSpeech})</i>
-      <div className='gender-letter gender-m'>M</div>
-      {entry.translation}
-      {Object.values(entry.customValues).map((val) => (
-        <p key={val.definition.id}>
-          <b>{val.definition.name}: </b>
-          {val.definition.type === 'text' && val.text}
-          {val.definition.type === 'single' &&
-            val.option &&
-            val.definition.options![val.option]}
-        </p>
-      ))}
+      <span className='word-title'>{entryFull.original}</span>
+      <div style={{ textAlign: 'left' }}>
+        {/* <div className='gender-letter gender-m'>M</div> */}
+        <br />
+        <i>({entryFull.partOfSpeech})</i>
+        <br />
+        <b>{entryFull.translation}</b>
+        {Object.values(entryFull.customValues).map((val) => (
+          <p key={val.definition.id}>
+            <b>{val.definition.name}: </b>
+            {val.definition.type === 'text' && val.text}
+            {val.definition.type === 'single' &&
+              val.option &&
+              val.definition.options![val.option]}
+          </p>
+        ))}
+      </div>
       {/* { defs && defs.map((def) => (console.log("FUCK", def))) }  */}
       {openEdit && (
         <EditEntryDialog
           selectedLang={selectedLang}
-          entry={entry}
+          entry={entryFull}
           onClose={() => setOpenEdit(false)}
           defs={defs}
-          customValues={entry.customValues}
-          onAddEntry={() => console.log('onaddentry')}
+          customValues={entryFull.customValues}
+          onEditEntry={onEditEntry}
         />
       )}
     </div>

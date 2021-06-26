@@ -55,6 +55,7 @@ const PropertiesPage: FC<PropertiesPageProps> = ({ selectedLang }) => {
       {openedProperty && (
         <EditPropertyDialog
           property={openedProperty}
+          langId={selectedLang.id}
           onClose={() => setOpenedProperty(undefined)}
         />
       )}

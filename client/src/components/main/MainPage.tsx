@@ -25,12 +25,7 @@ const MainPage: FC<MainPageProps> = ({ selectedLang }) => {
   const [entries, setEntries] = useState<Entry[]>([]);
 
   const { loading, error, data: entriesPage } = useQuery<Page<Entry>>(
-    () =>
-      getLanguageEntries(
-        selectedLang.id,
-        (lastPage - 1) * ENTRIES_PER_PAGE,
-        ENTRIES_PER_PAGE,
-      ),
+    () => getLanguageEntries(selectedLang.id, entries.length, ENTRIES_PER_PAGE),
     {
       deps: [selectedLang.id, lastPage],
     },
@@ -41,6 +36,18 @@ const MainPage: FC<MainPageProps> = ({ selectedLang }) => {
       setEntries([...entries, ...entriesPage.items]);
     }
   }, [entriesPage]);
+
+  const handleAddedEntry = async (entry: Entry) => {
+    setEntries([entry, ...entries]);
+  };
+
+  const handleEditEntry = async (editedEntry: Entry) => {
+    const idx = entries.findIndex((e) => e.id === editedEntry.id);
+    const newEntries = [...entries];
+    newEntries.splice(idx, 1, editedEntry);
+    console.log(editedEntry);
+    setEntries(newEntries);
+  };
 
   if (error) return <p>Error!</p>;
   if (loading) return <p>Loading...</p>;
@@ -77,9 +84,10 @@ const MainPage: FC<MainPageProps> = ({ selectedLang }) => {
           <div className='grid-item entry-detailed'>
             <EntryDetailed
               selectedLang={selectedLang}
-              entryId={openedEntry.id}
+              entry={entries.find((e) => e.id === openedEntry.id)!}
               onClose={() => setOpenedEntry(undefined)}
               openEdit={openEdit}
+              onEditEntry={(entry) => handleEditEntry(entry)}
               setOpenEdit={setOpenEdit}
             />
           </div>
@@ -93,7 +101,7 @@ const MainPage: FC<MainPageProps> = ({ selectedLang }) => {
         <AddEntryDialog
           selectedLang={selectedLang}
           onClose={() => setOpen(false)}
-          onAddEntry={(entry) => console.log(entry)}
+          onAddEntry={(entry) => handleAddedEntry(entry)}
         />
       )}
     </div>

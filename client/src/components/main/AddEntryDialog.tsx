@@ -1,4 +1,4 @@
-import React, { useState, FC, useEffect, useRef } from 'react';
+import React, { useState, FC } from 'react';
 import {
   createEntry,
   CreateEntryPropertyValue,
@@ -7,7 +7,7 @@ import {
 } from '../../api/client';
 
 import {
-  CustomType,
+  PropertyType,
   Entry,
   Language,
   PartOfSpeech,
@@ -54,12 +54,15 @@ const PropertyRow: FC<PropertyRowProps> = ({
             onPropValueChange({ option: event.target.value });
           }}
           value={propValue?.option}
+          defaultValue=''
         >
-          <option value='' disabled>
-            Select
+          <option value='' disabled hidden>
+            ---
           </option>
           {Object.entries(prop.options).map(([key, opt]) => (
-            <option key={key}>{opt}</option>
+            <option key={key} value={key}>
+              {opt}
+            </option>
           ))}
         </select>
       )}
@@ -67,13 +70,18 @@ const PropertyRow: FC<PropertyRowProps> = ({
         <>
           {Object.entries(prop.options).map(([key, opt]) => (
             <>
-              <input key={key} type='checkbox' className='basic-slide' />
+              <input
+                key={key}
+                value={key}
+                type='checkbox'
+                className='basic-slide'
+              />
               <label>{opt}</label>
             </>
           ))}
         </>
       )}
-      {prop.type === CustomType.Text && (
+      {prop.type === PropertyType.Text && (
         <textarea
           className='basic-slide'
           onChange={(event) => {
@@ -132,7 +140,7 @@ const AddEntryDialog: FC<AddEntryDialogProps> = ({
       original,
       translation,
       langId: selectedLang.id,
-      partOfSpeech: pos.toLowerCase() as PartOfSpeech,
+      partOfSpeech: pos,
       customValues: propertyValues,
     }),
   );

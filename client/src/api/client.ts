@@ -74,6 +74,20 @@ export async function createEntry(
   return response.json();
 }
 
+export async function updateEntry(
+  createEntry: CreateEntryParams,
+  entryId: string,
+): Promise<Entry> {
+  const response = await fetch(`${API}/entries/${entryId}`, {
+    method: 'put',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(createEntry),
+  });
+  return response.json();
+}
+
 export interface CreatePropertyParams {
   name: string;
   type: string;
@@ -86,9 +100,23 @@ export interface CreatePropertyParams {
 
 export async function createProperty(
   createProperty: CreatePropertyParams,
-): Promise<Entry> {
+): Promise<Property> {
   const response = await fetch(`${API}/definitions`, {
     method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(createProperty),
+  });
+  return response.json();
+}
+
+export async function updateProperty(
+  createProperty: CreatePropertyParams,
+  propId: string,
+): Promise<Property> {
+  const response = await fetch(`${API}/definitions/${propId}`, {
+    method: 'put',
     headers: {
       'Content-Type': 'application/json',
     },
