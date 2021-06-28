@@ -25,7 +25,10 @@ const LangSelectDialog: FC<LangSelectDialogProps> = ({ onClose }) => {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className='dialog-overlay' onClick={onClose}>
+    <div
+      className='dialog-overlay'
+      onClick={() => initialSelectedLang && onClose()}
+    >
       <dialog
         open
         className='center dialog'
@@ -34,14 +37,14 @@ const LangSelectDialog: FC<LangSelectDialogProps> = ({ onClose }) => {
         <h3>Select Language</h3>
         <select
           className='basic-slide'
-          value={selectedLang && selectedLang.id}
+          value={selectedLang ? selectedLang.id : ''}
           onChange={(event) => {
             setSelectedLang(
               languages.find((lang) => lang.id === event.target.value)!,
             );
           }}
         >
-          {/* <option key='' selected={!selectedLang} hidden /> */}
+          <option key='' hidden={!selectedLang} />
           {languages.map((lang) => (
             <option key={lang.id} value={lang.id}>
               {lang.name}
