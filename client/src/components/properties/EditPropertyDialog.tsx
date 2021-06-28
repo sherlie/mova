@@ -10,18 +10,15 @@ import {
 import { updateEntry, updateProperty } from '../../api/client';
 import '../App.css';
 import { useMutation } from '../../api/useMutation';
+import { useLangSelector } from '../../store';
 
 interface PropetyDialogProps {
   property: Property;
-  langId: string;
   onClose: () => void;
 }
 
-const EditPropetyDialog: FC<PropetyDialogProps> = ({
-  property,
-  langId,
-  onClose,
-}) => {
+const EditPropetyDialog: FC<PropetyDialogProps> = ({ property, onClose }) => {
+  const selectedLang = useLangSelector();
   const [inputList, setInputList] = useState<string[]>(['']);
   const [name, setName] = useState<string>(property.name);
 
@@ -35,7 +32,7 @@ const EditPropetyDialog: FC<PropetyDialogProps> = ({
       {
         name,
         type: property.type,
-        langId,
+        langId: selectedLang!.id,
         partOfSpeech: property.partOfSpeech,
         options:
           property.type === PropertyType['Single Option'] ||

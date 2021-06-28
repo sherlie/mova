@@ -7,7 +7,6 @@ import '../App.css';
 import EditEntryDialog from './EditEntryDialog';
 
 interface EntryDetailedProps {
-  selectedLang: Language;
   entry: Entry;
   onClose: () => void;
   openEdit: boolean;
@@ -16,7 +15,6 @@ interface EntryDetailedProps {
 }
 
 const EntryDetailed: FC<EntryDetailedProps> = ({
-  selectedLang,
   entry,
   onClose,
   openEdit,
@@ -61,7 +59,6 @@ const EntryDetailed: FC<EntryDetailedProps> = ({
       {/* { defs && defs.map((def) => (console.log("FUCK", def))) }  */}
       {openEdit && (
         <EditEntryDialog
-          selectedLang={selectedLang}
           entry={entryFull}
           onClose={() => setOpenEdit(false)}
           defs={defs}

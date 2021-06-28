@@ -15,17 +15,16 @@ import {
 } from '../../api/types';
 import { useMutation } from '../../api/useMutation';
 import { useQuery } from '../../api/useQuery';
+import { useLangSelector } from '../../store';
 import '../App.css';
 
 interface AddEntryDialogProps {
-  selectedLang: Language;
   onAddEntry: (entry: Entry) => void;
   onClose: () => void;
 }
 
 interface PropertiesFormProps {
   pos: PartOfSpeech;
-  selectedLang: Language;
   propValues: CreateEntryPropertyValues;
   onPropValueChange: (
     propId: string,
@@ -96,12 +95,12 @@ const PropertyRow: FC<PropertyRowProps> = ({
 
 const PropertiesForm: FC<PropertiesFormProps> = ({
   pos,
-  selectedLang,
   propValues,
   onPropValueChange,
 }) => {
+  const selectedLang = useLangSelector();
   const { data: propertiesData } = useQuery<Property[]>(() =>
-    getLanguageProperties(selectedLang.id).then((page) => page.items),
+    getLanguageProperties(selectedLang!.id).then((page) => page.items),
   );
   const properties = propertiesData ?? [];
   const posProperties = properties.filter((prop) => prop.partOfSpeech === pos);
@@ -122,11 +121,8 @@ const PropertiesForm: FC<PropertiesFormProps> = ({
   );
 };
 
-const AddEntryDialog: FC<AddEntryDialogProps> = ({
-  selectedLang,
-  onAddEntry,
-  onClose,
-}) => {
+const AddEntryDialog: FC<AddEntryDialogProps> = ({ onAddEntry, onClose }) => {
+  const selectedLang = useLangSelector();
   const [original, setOriginal] = useState('');
   const [translation, setTranslation] = useState('');
   const [pos, setPos] = useState<PartOfSpeech>(PartOfSpeech.Noun);
@@ -139,7 +135,7 @@ const AddEntryDialog: FC<AddEntryDialogProps> = ({
     createEntry({
       original,
       translation,
-      langId: selectedLang.id,
+      langId: selectedLang!.id,
       partOfSpeech: pos,
       customValues: propertyValues,
     }),
@@ -168,7 +164,7 @@ const AddEntryDialog: FC<AddEntryDialogProps> = ({
           <h3>Add New Entry</h3>
         </div>
         <p>
-          <label>ENTRY (IN {selectedLang.name.toUpperCase()})</label> <br />
+          <label>ENTRY (IN {selectedLang!.name.toUpperCase()})</label> <br />
           <input
             className='basic-slide'
             name='original'
@@ -204,7 +200,6 @@ const AddEntryDialog: FC<AddEntryDialogProps> = ({
         <div>
           <PropertiesForm
             pos={pos}
-            selectedLang={selectedLang}
             propValues={propertyValues}
             onPropValueChange={(propId, propValue) =>
               setPropertyValues({ ...propertyValues, [propId]: propValue })

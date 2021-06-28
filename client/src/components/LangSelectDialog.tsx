@@ -3,21 +3,21 @@ import React, { FC, useState } from 'react';
 import { Language } from '../api/types';
 import { getLanguages } from '../api/client';
 import { useQuery } from '../api/useQuery';
+import { useDispatch } from 'react-redux';
+import { useLangSelector } from '../store';
+import { select } from '../store/lang';
 
 interface LangSelectDialogProps {
-  selectedLang: Language | undefined;
-  onSelectLang: (lang: Language) => void;
   onClose: () => void;
 }
 
-const LangSelectDialog: FC<LangSelectDialogProps> = ({
-  selectedLang: initialSelectedLang,
-  onSelectLang,
-  onClose,
-}) => {
+const LangSelectDialog: FC<LangSelectDialogProps> = ({ onClose }) => {
   const { loading, error, data } = useQuery<Language[]>(() =>
     getLanguages().then((page) => page.items),
   );
+  const initialSelectedLang = useLangSelector();
+  const dispatch = useDispatch();
+
   const [selectedLang, setSelectedLang] = useState(initialSelectedLang);
   const languages = data ?? [];
 
@@ -41,7 +41,7 @@ const LangSelectDialog: FC<LangSelectDialogProps> = ({
             );
           }}
         >
-          <option key='' selected={!selectedLang} hidden />
+          {/* <option key='' selected={!selectedLang} hidden /> */}
           {languages.map((lang) => (
             <option key={lang.id} value={lang.id}>
               {lang.name}
@@ -50,10 +50,11 @@ const LangSelectDialog: FC<LangSelectDialogProps> = ({
         </select>
         <button
           onClick={() => {
-            onSelectLang(selectedLang!);
+            dispatch(select(selectedLang!));
             onClose();
           }}
           className='confirm-button'
+          disabled={!selectedLang}
         >
           OK
         </button>

@@ -4,16 +4,14 @@ import { useMutation } from '../../api/useMutation';
 import { PropertyType, Language, PartOfSpeech } from '../../api/types';
 import '../App.css';
 import { createProperty } from '../../api/client';
+import { useLangSelector } from '../../store';
 
 interface PropetyDialogProps {
-  selectedLang: Language;
   onClose: () => void;
 }
 
-const AddPropetyDialog: FC<PropetyDialogProps> = ({
-  selectedLang,
-  onClose,
-}) => {
+const AddPropetyDialog: FC<PropetyDialogProps> = ({ onClose }) => {
+  const selectedLang = useLangSelector();
   const [inputList, setInputList] = useState<string[]>(['']);
   const [name, setName] = useState<string>('');
   const [type, setType] = useState<PropertyType>(PropertyType.Text);
@@ -23,7 +21,7 @@ const AddPropetyDialog: FC<PropetyDialogProps> = ({
     createProperty({
       name,
       type,
-      langId: selectedLang.id,
+      langId: selectedLang!.id,
       partOfSpeech: pos,
       options:
         type === PropertyType['Single Option'] ||

@@ -14,10 +14,10 @@ import {
   PropertyValue,
 } from '../../api/types';
 import { useMutation } from '../../api/useMutation';
+import { useLangSelector } from '../../store';
 import '../App.css';
 
 interface EditEntryDialogProps {
-  selectedLang: Language;
   entry: Entry;
   onEditEntry: (entry: Entry) => void;
   onClose: () => void;
@@ -26,13 +26,13 @@ interface EditEntryDialogProps {
 }
 
 const EditEntryDialog: FC<EditEntryDialogProps> = ({
-  selectedLang,
   onEditEntry,
   entry,
   onClose,
   defs,
   customValues,
 }) => {
+  const selectedLang = useLangSelector();
   const [original, setOriginal] = useState(entry.original);
   const [translation, setTranslation] = useState(entry.translation);
   const [
@@ -45,7 +45,7 @@ const EditEntryDialog: FC<EditEntryDialogProps> = ({
       {
         original: original,
         translation,
-        langId: selectedLang.id,
+        langId: selectedLang!.id,
         partOfSpeech: entry.partOfSpeech,
         customValues: propertyValues,
       },
@@ -76,7 +76,7 @@ const EditEntryDialog: FC<EditEntryDialogProps> = ({
           <h3>Edit Entry</h3>
         </div>
         <p>
-          <label>ENTRY (IN {selectedLang.name.toUpperCase()})</label> <br />
+          <label>ENTRY (IN {selectedLang!.name.toUpperCase()})</label> <br />
           <input
             className='basic-slide'
             name='original'

@@ -8,15 +8,12 @@ import '../App.css';
 import AddEntryDialog from './AddEntryDialog';
 import { getLanguageEntries } from '../../api/client';
 import { useEffect } from 'react';
+import { useLangSelector } from '../../store';
 
 const ENTRIES_PER_PAGE = 10;
 
-interface MainPageProps {
-  selectedLang: Language | undefined;
-}
-
-const MainPage: FC<MainPageProps> = ({ selectedLang }) => {
-  if (!selectedLang) return <div> choose a language first :) </div>;
+const MainPage: FC = () => {
+  const selectedLang = useLangSelector();
 
   const [open, setOpen] = useState(false);
   const [openedEntry, setOpenedEntry] = useState<Entry | undefined>(undefined);
@@ -25,9 +22,12 @@ const MainPage: FC<MainPageProps> = ({ selectedLang }) => {
   const [entries, setEntries] = useState<Entry[]>([]);
 
   const { loading, error, data: entriesPage } = useQuery<Page<Entry>>(
-    () => getLanguageEntries(selectedLang.id, entries.length, ENTRIES_PER_PAGE),
+    () =>
+      selectedLang
+        ? getLanguageEntries(selectedLang.id, entries.length, ENTRIES_PER_PAGE)
+        : Promise.resolve({ items: [], hasMore: false }),
     {
-      deps: [selectedLang.id, lastPage],
+      deps: [selectedLang?.id, lastPage],
     },
   );
 
@@ -49,6 +49,7 @@ const MainPage: FC<MainPageProps> = ({ selectedLang }) => {
     setEntries(newEntries);
   };
 
+  if (!selectedLang) return <div> choose a language first :) </div>;
   if (error) return <p>Error!</p>;
   if (loading) return <p>Loading...</p>;
   return (
@@ -83,7 +84,6 @@ const MainPage: FC<MainPageProps> = ({ selectedLang }) => {
         {openedEntry && (
           <div className='grid-item entry-detailed'>
             <EntryDetailed
-              selectedLang={selectedLang}
               entry={entries.find((e) => e.id === openedEntry.id)!}
               onClose={() => setOpenedEntry(undefined)}
               openEdit={openEdit}
@@ -99,7 +99,6 @@ const MainPage: FC<MainPageProps> = ({ selectedLang }) => {
       </button>
       {open && (
         <AddEntryDialog
-          selectedLang={selectedLang}
           onClose={() => setOpen(false)}
           onAddEntry={(entry) => handleAddedEntry(entry)}
         />
