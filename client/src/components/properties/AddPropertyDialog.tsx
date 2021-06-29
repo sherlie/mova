@@ -1,7 +1,7 @@
 import React, { useState, FC } from 'react';
 
 import { useMutation } from '../../api/useMutation';
-import { PropertyType, Language, PartOfSpeech } from '../../api/types';
+import { PropertyType, PartOfSpeech } from '../../api/types';
 import '../App.css';
 import { createProperty } from '../../api/client';
 import { useLangSelector } from '../../store';

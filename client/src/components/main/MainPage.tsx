@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 
 import { useQuery } from '../../api/useQuery';
-import { Language, Entry, Page } from '../../api/types';
+import { Entry, Page } from '../../api/types';
 import EntryList from './EntryList';
 import EntryDetailed from './EntryDetailed';
 import '../App.css';
@@ -71,7 +71,11 @@ const MainPage: FC = () => {
 
       <div className='grid-container-2-equal'>
         <div className='grid-item'>
-          <EntryList entries={entries} setOpenedEntry={setOpenedEntry} />
+          <EntryList
+            entries={entries}
+            setOpenedEntry={setOpenedEntry}
+            openedEntry={openedEntry}
+          />
           {entriesPage && entriesPage.hasMore && (
             <button
               className='confirm-button'
@@ -82,7 +86,10 @@ const MainPage: FC = () => {
           )}
         </div>
         {openedEntry && (
-          <div className='grid-item entry-detailed'>
+          <div
+            className='grid-item'
+            style={{ position: 'fixed', left: '50%', width: '45%' }}
+          >
             <EntryDetailed
               entry={entries.find((e) => e.id === openedEntry.id)!}
               onClose={() => setOpenedEntry(undefined)}

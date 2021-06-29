@@ -2,12 +2,11 @@ import React, { useState, FC } from 'react';
 
 import {
   PropertyType,
-  PartOfSpeech,
   partOfSpeechLabel,
   Property,
   propertyTypeLabel,
 } from '../../api/types';
-import { updateEntry, updateProperty } from '../../api/client';
+import { updateProperty } from '../../api/client';
 import '../App.css';
 import { useMutation } from '../../api/useMutation';
 import { useLangSelector } from '../../store';

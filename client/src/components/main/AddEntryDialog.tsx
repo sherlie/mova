@@ -6,13 +6,7 @@ import {
   getLanguageProperties,
 } from '../../api/client';
 
-import {
-  PropertyType,
-  Entry,
-  Language,
-  PartOfSpeech,
-  Property,
-} from '../../api/types';
+import { PropertyType, Entry, PartOfSpeech, Property } from '../../api/types';
 import { useMutation } from '../../api/useMutation';
 import { useQuery } from '../../api/useQuery';
 import { useLangSelector } from '../../store';

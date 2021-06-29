@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import { Property, Entry, Language } from '../../api/types';
+import { Property, Entry } from '../../api/types';
 import { useQuery } from '../../api/useQuery';
 import { getEntryProperties, getEntry } from '../../api/client';
 import '../App.css';
@@ -41,11 +41,12 @@ const EntryDetailed: FC<EntryDetailedProps> = ({
       </a>
       <span className='word-title'>{entryFull.original}</span>
       <div style={{ textAlign: 'left' }}>
-        {/* <div className='gender-letter gender-m'>M</div> */}
-        <br />
-        <i>({entryFull.partOfSpeech})</i>
-        <br />
-        <b>{entryFull.translation}</b>
+        <p>
+          {/* <div className='gender-letter gender-m'>M</div> */}
+          <i>({entryFull.partOfSpeech})</i>
+          <br />
+          <b>{entryFull.translation}</b>
+        </p>
         {Object.values(entryFull.customValues).map((val) => (
           <p key={val.definition.id}>
             <b>{val.definition.name}: </b>

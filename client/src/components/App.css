@@ -156,11 +156,18 @@ main {
 .entry-row {
   transition: 200ms ease;
   border-radius: 10px;
-  background-color: #eee;
   margin-top: 5px;
   margin-bottom: 5px;
 }
-.entry-row:hover {
+.row-regular {
+  background-color: #eee;
+}
+
+.row-opened {
+  background-color: #dac4f2;
+}
+
+.row-regular:hover {
   background-color: #e5e5e5;
 }
 .no-border {
@@ -277,6 +284,7 @@ label {
   border-radius: 10px;
   color: black;
 }
+
 .dialog {
   width: min(600px, 50%);
   height: 60%;
@@ -306,9 +314,11 @@ body::-webkit-scrollbar-thumb {
 }
 .entry-detailed {
   background-color: #f2f2f2;
-  border: none;
   border-radius: 10px;
-  margin-left: 1rem;
+  padding: 10px;
+  padding-left: 20px;
+  /* border: none;
+  margin-left: 1rem; */
 }
 
 .dialog-overlay {

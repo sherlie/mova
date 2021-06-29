@@ -8,7 +8,6 @@ import {
 import {
   PropertyType,
   Entry,
-  Language,
   partOfSpeechLabel,
   Property,
   PropertyValue,
