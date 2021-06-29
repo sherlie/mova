@@ -17,104 +17,6 @@ interface AddEntryDialogProps {
   onClose: () => void;
 }
 
-interface PropertiesFormProps {
-  pos: PartOfSpeech;
-  propValues: CreateEntryPropertyValues;
-  onPropValueChange: (
-    propId: string,
-    propValue: CreateEntryPropertyValue,
-  ) => void;
-}
-
-interface PropertyRowProps {
-  prop: Property;
-  propValue: CreateEntryPropertyValue;
-  onPropValueChange: (propValue: CreateEntryPropertyValue) => void;
-}
-
-const PropertyRow: FC<PropertyRowProps> = ({
-  prop,
-  propValue,
-  onPropValueChange,
-}) => {
-  return (
-    <p key={prop.id}>
-      <label className='label'>{prop.name.toUpperCase()}</label> <br />
-      {prop.type === 'single' && prop.options && (
-        <select
-          className='basic-slide'
-          onChange={(event) => {
-            onPropValueChange({ option: event.target.value });
-          }}
-          value={propValue?.option}
-          defaultValue=''
-        >
-          <option value='' disabled hidden>
-            ---
-          </option>
-          {Object.entries(prop.options).map(([key, opt]) => (
-            <option key={key} value={key}>
-              {opt}
-            </option>
-          ))}
-        </select>
-      )}
-      {prop.type === 'multi' && prop.options && (
-        <>
-          {Object.entries(prop.options).map(([key, opt]) => (
-            <>
-              <input
-                key={key}
-                value={key}
-                type='checkbox'
-                className='basic-slide'
-              />
-              <label>{opt}</label>
-            </>
-          ))}
-        </>
-      )}
-      {prop.type === PropertyType.Text && (
-        <textarea
-          className='basic-slide'
-          onChange={(event) => {
-            onPropValueChange({ text: event.target.value });
-          }}
-          value={propValue?.text}
-        />
-      )}
-    </p>
-  );
-};
-
-const PropertiesForm: FC<PropertiesFormProps> = ({
-  pos,
-  propValues,
-  onPropValueChange,
-}) => {
-  const selectedLang = useLangSelector();
-  const { data: propertiesData } = useQuery<Property[]>(() =>
-    getLanguageProperties(selectedLang!.id).then((page) => page.items),
-  );
-  const properties = propertiesData ?? [];
-  const posProperties = properties.filter((prop) => prop.partOfSpeech === pos);
-
-  return (
-    <div>
-      {posProperties.map((prop) => (
-        <PropertyRow
-          key={prop.id}
-          prop={prop}
-          propValue={propValues[prop.id]}
-          onPropValueChange={(propValue) =>
-            onPropValueChange(prop.id, propValue)
-          }
-        />
-      ))}
-    </div>
-  );
-};
-
 const AddEntryDialog: FC<AddEntryDialogProps> = ({ onAddEntry, onClose }) => {
   const selectedLang = useLangSelector();
   const [original, setOriginal] = useState('');
@@ -204,6 +106,113 @@ const AddEntryDialog: FC<AddEntryDialogProps> = ({ onAddEntry, onClose }) => {
           SUBMIT
         </button>
       </dialog>
+    </div>
+  );
+};
+
+interface PropertiesFormProps {
+  pos: PartOfSpeech;
+  propValues: CreateEntryPropertyValues;
+  onPropValueChange: (
+    propId: string,
+    propValue: CreateEntryPropertyValue,
+  ) => void;
+}
+
+const PropertiesForm: FC<PropertiesFormProps> = ({
+  pos,
+  propValues,
+  onPropValueChange,
+}) => {
+  const selectedLang = useLangSelector();
+  const { data: propertiesData } = useQuery<Property[]>(() =>
+    getLanguageProperties(selectedLang!.id).then((page) => page.items),
+  );
+  const properties = propertiesData ?? [];
+  const posProperties = properties.filter((prop) => prop.partOfSpeech === pos);
+
+  return (
+    <div>
+      {posProperties.map((prop) => (
+        <PropertyRow
+          key={prop.id}
+          prop={prop}
+          propValue={propValues[prop.id]}
+          onPropValueChange={(propValue) =>
+            onPropValueChange(prop.id, propValue)
+          }
+        />
+      ))}
+    </div>
+  );
+};
+
+interface PropertyRowProps {
+  prop: Property;
+  propValue: CreateEntryPropertyValue;
+  onPropValueChange: (propValue: CreateEntryPropertyValue) => void;
+}
+
+const PropertyRow: FC<PropertyRowProps> = ({
+  prop,
+  propValue,
+  onPropValueChange,
+}) => {
+  const handleMultiOptionChange = (option: string) => {
+    const options = propValue ? propValue.options! : [];
+    const newOptions = options.includes(option)
+      ? options.filter((opt) => opt !== option)
+      : [...options, option];
+    onPropValueChange({ options: newOptions });
+  };
+  return (
+    <div>
+      <label className='label'>{prop.name.toUpperCase()}</label> <br />
+      {prop.type === 'single' && prop.options && (
+        <select
+          className='basic-slide'
+          onChange={(event) => {
+            onPropValueChange({ option: event.target.value });
+          }}
+          value={propValue?.option}
+          defaultValue=''
+        >
+          <option value='' disabled hidden>
+            ---
+          </option>
+          {Object.entries(prop.options).map(([key, opt]) => (
+            <option key={key} value={key}>
+              {opt}
+            </option>
+          ))}
+        </select>
+      )}
+      {prop.type === 'multi' && prop.options && (
+        <div className='basic-slide'>
+          {Object.entries(prop.options).map(([key, opt]) => (
+            <label className='checkbox' key={key}>
+              <input
+                value={key}
+                type='checkbox'
+                className='basic-slide'
+                onChange={(event) => {
+                  handleMultiOptionChange(event.target.value);
+                }}
+              />
+              <span>{opt}</span>
+            </label>
+          ))}
+        </div>
+      )}
+      {prop.type === PropertyType.Text && (
+        <textarea
+          className='basic-slide'
+          onChange={(event) => {
+            onPropValueChange({ text: event.target.value });
+          }}
+          value={propValue?.text}
+        />
+      )}
     </div>
   );
 };

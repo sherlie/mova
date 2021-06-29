@@ -75,14 +75,16 @@ const EditEntryDialog: FC<EditEntryDialogProps> = ({
           <h3>Edit Entry</h3>
         </div>
         <p>
-          <label>ENTRY (IN {selectedLang!.name.toUpperCase()})</label> <br />
-          <input
-            className='basic-slide'
-            name='original'
-            placeholder='word or phrase'
-            value={original}
-            onChange={(event) => setOriginal(event.target.value)}
-          />
+          <label>
+            ENTRY (IN {selectedLang!.name.toUpperCase()})
+            <input
+              className='basic-slide'
+              name='original'
+              placeholder='word or phrase'
+              value={original}
+              onChange={(event) => setOriginal(event.target.value)}
+            />
+          </label>
         </p>
         <p>
           <label>TRANSLATION</label> <br />
@@ -158,8 +160,16 @@ const PropertyRow: FC<PropertyRowProps> = ({
   propValue,
   onPropValueChange,
 }) => {
+  const handleMultiOptionChange = (option: string) => {
+    const options = propValue ? propValue.options! : [];
+    const newOptions = options.includes(option)
+      ? options.filter((opt) => opt !== option)
+      : [...options, option];
+    onPropValueChange({ options: newOptions });
+  };
+
   return (
-    <p key={prop.id}>
+    <div>
       <label className='label'>{prop.name.toUpperCase()}</label> <br />
       {prop.type === 'single' && prop.options && (
         <select
@@ -177,19 +187,22 @@ const PropertyRow: FC<PropertyRowProps> = ({
         </select>
       )}
       {prop.type === 'multi' && prop.options && (
-        <>
+        <div className='basic-slide'>
           {Object.entries(prop.options).map(([key, opt]) => (
-            <>
+            <label className='checkbox' key={key}>
               <input
-                key={key}
                 value={key}
                 type='checkbox'
+                checked={propValue.options?.includes(key)}
                 className='basic-slide'
+                onChange={(event) => {
+                  handleMultiOptionChange(event.target.value);
+                }}
               />
-              <label>{opt}</label>
-            </>
+              <span>{opt}</span>
+            </label>
           ))}
-        </>
+        </div>
       )}
       {prop.type === PropertyType.Text && (
         <textarea
@@ -200,7 +213,7 @@ const PropertyRow: FC<PropertyRowProps> = ({
           value={propValue?.text}
         />
       )}
-    </p>
+    </div>
   );
 };
 

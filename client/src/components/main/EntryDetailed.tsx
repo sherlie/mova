@@ -54,6 +54,9 @@ const EntryDetailed: FC<EntryDetailedProps> = ({
             {val.definition.type === 'single' &&
               val.option &&
               val.definition.options![val.option]}
+            {val.definition.type === 'multi' &&
+              val.options &&
+              val.options.map((opt) => val.definition.options![opt] + ' ')}
           </p>
         ))}
       </div>
