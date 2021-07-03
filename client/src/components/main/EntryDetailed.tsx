@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 
 import { Property, Entry } from '../../api/types';
 import { useQuery } from '../../api/useQuery';
-import { getEntryProperties, getEntry } from '../../api/client';
+import { getEntryProperties, getEntry, deleteEntry } from '../../api/client';
 import '../App.css';
 import EditEntryDialog from './EditEntryDialog';
 
@@ -12,6 +12,7 @@ interface EntryDetailedProps {
   openEdit: boolean;
   setOpenEdit: (open: boolean) => void;
   onEditEntry: (entry: Entry) => void;
+  onDeleteEntry: (entry: Entry) => void;
 }
 
 const EntryDetailed: FC<EntryDetailedProps> = ({
@@ -20,6 +21,7 @@ const EntryDetailed: FC<EntryDetailedProps> = ({
   openEdit,
   setOpenEdit,
   onEditEntry,
+  onDeleteEntry,
 }) => {
   const { data: defs } = useQuery<Property[]>(
     () => getEntryProperties(entry.id),
@@ -28,16 +30,28 @@ const EntryDetailed: FC<EntryDetailedProps> = ({
   const { data: entryFull } = useQuery<Entry>(() => getEntry(entry.id), {
     deps: [entry],
   });
+  const handleDelete = async () => {
+    onClose();
+    const result = await deleteEntry(entry);
+    if (result) {
+      onDeleteEntry(result);
+    }
+  };
   if (entryFull === null) return <div />;
   return (
     <div className='container entry-detailed '>
       <a className='topright'>
         <i
-          className='fa fa-pencil-square'
+          className='fas fa-edit'
           style={{ marginRight: '2px' }}
           onClick={() => setOpenEdit(true)}
         ></i>
-        <i className='fas fa-window-close' onClick={onClose}></i>
+        <i
+          className='fas fa-trash-alt'
+          onClick={handleDelete}
+          style={{ marginRight: '2px' }}
+        ></i>
+        <i className='fas fa-times' onClick={onClose}></i>
       </a>
       <span className='word-title'>{entryFull.original}</span>
       <div style={{ textAlign: 'left' }}>

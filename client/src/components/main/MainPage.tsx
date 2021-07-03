@@ -45,7 +45,13 @@ const MainPage: FC = () => {
     const idx = entries.findIndex((e) => e.id === editedEntry.id);
     const newEntries = [...entries];
     newEntries.splice(idx, 1, editedEntry);
-    console.log(editedEntry);
+    setEntries(newEntries);
+  };
+
+  const handleDeleteEntry = async (delEntry: Entry) => {
+    const idx = entries.findIndex((e) => e.id === delEntry.id);
+    const newEntries = [...entries];
+    newEntries.splice(idx, 1);
     setEntries(newEntries);
   };
 
@@ -93,6 +99,7 @@ const MainPage: FC = () => {
               openEdit={openEdit}
               onEditEntry={(entry) => handleEditEntry(entry)}
               setOpenEdit={setOpenEdit}
+              onDeleteEntry={(entry) => handleDeleteEntry(entry)}
             />
           </div>
         )}

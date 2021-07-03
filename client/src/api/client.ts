@@ -124,3 +124,10 @@ export async function updateProperty(
   });
   return response.json();
 }
+
+export async function deleteEntry(entry: Entry): Promise<Entry> {
+  const response = await fetch(`${API}/entries/${entry.id}`, {
+    method: 'delete',
+  });
+  return response.json();
+}
