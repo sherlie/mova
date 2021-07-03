@@ -9,7 +9,7 @@
 main {
   margin-left: 5rem;
   padding: 1rem;
-  margin-right: 10rem;
+  margin-right: 2%;
 }
 @media only screen and (max-width: 600px) {
   .navbar {
@@ -36,6 +36,11 @@ main {
 
   main {
     margin: 0;
+  }
+  .right-fixed-position {
+    position: 'fixed';
+    left: '49%';
+    width: '45%';
   }
 }
 
@@ -66,7 +71,12 @@ main {
   .navbar-list {
     flex-direction: column;
   }
-
+  .right-fixed-position {
+    position: 'fixed';
+    left: '49%';
+    width: '45%';
+    margin-left: '2rem';
+  }
   /* .navbar:hover .logo svg
   {
     margin-left: 11rem;
@@ -98,6 +108,7 @@ main {
   color: black;
   font-weight: 800;
 }
+
 .checkbox {
   display: inline-flex;
   cursor: pointer;

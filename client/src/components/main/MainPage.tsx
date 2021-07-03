@@ -49,7 +49,7 @@ const MainPage: FC = () => {
     setEntries(newEntries);
   };
 
-  if (!selectedLang) return <div> choose a language first :) </div>;
+  if (!selectedLang) return <div />;
   if (error) return <p>Error!</p>;
   if (loading) return <p>Loading...</p>;
   return (
@@ -86,10 +86,7 @@ const MainPage: FC = () => {
           )}
         </div>
         {openedEntry && (
-          <div
-            className='grid-item'
-            style={{ position: 'fixed', left: '50%', width: '45%' }}
-          >
+          <div className='grid-item right-fixed-position'>
             <EntryDetailed
               entry={entries.find((e) => e.id === openedEntry.id)!}
               onClose={() => setOpenedEntry(undefined)}
