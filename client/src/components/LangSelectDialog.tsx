@@ -3,21 +3,21 @@ import React, { FC, useState } from 'react';
 import { Language } from '../api/types';
 import { getLanguages } from '../api/client';
 import { useQuery } from '../api/useQuery';
+import { useDispatch } from 'react-redux';
+import { useLangSelector } from '../store';
+import { select } from '../store/lang';
 
 interface LangSelectDialogProps {
-  selectedLang: Language | undefined;
-  onSelectLang: (lang: Language) => void;
   onClose: () => void;
 }
 
-const LangSelectDialog: FC<LangSelectDialogProps> = ({
-  selectedLang: initialSelectedLang,
-  onSelectLang,
-  onClose,
-}) => {
+const LangSelectDialog: FC<LangSelectDialogProps> = ({ onClose }) => {
   const { loading, error, data } = useQuery<Language[]>(() =>
     getLanguages().then((page) => page.items),
   );
+  const initialSelectedLang = useLangSelector();
+  const dispatch = useDispatch();
+
   const [selectedLang, setSelectedLang] = useState(initialSelectedLang);
   const languages = data ?? [];
 
@@ -25,7 +25,10 @@ const LangSelectDialog: FC<LangSelectDialogProps> = ({
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className='dialog-overlay' onClick={onClose}>
+    <div
+      className='dialog-overlay'
+      onClick={() => initialSelectedLang && onClose()}
+    >
       <dialog
         open
         className='center dialog'
@@ -34,29 +37,32 @@ const LangSelectDialog: FC<LangSelectDialogProps> = ({
         <h3>Select Language</h3>
         <select
           className='basic-slide'
-          value={selectedLang && selectedLang.id}
+          value={selectedLang ? selectedLang.id : ''}
           onChange={(event) => {
             setSelectedLang(
               languages.find((lang) => lang.id === event.target.value)!,
             );
           }}
         >
-          <option key='' selected={!selectedLang} hidden />
+          <option key='' hidden={!selectedLang} />
           {languages.map((lang) => (
             <option key={lang.id} value={lang.id}>
               {lang.name}
             </option>
           ))}
         </select>
-        <button
-          onClick={() => {
-            onSelectLang(selectedLang!);
-            onClose();
-          }}
-          className='confirm-button'
-        >
-          OK
-        </button>
+        <div style={{ textAlign: 'center' }}>
+          <button
+            onClick={() => {
+              dispatch(select(selectedLang!));
+              onClose();
+            }}
+            className='confirm-button'
+            disabled={!selectedLang}
+          >
+            OK
+          </button>
+        </div>
       </dialog>
     </div>
   );

@@ -1,66 +1,90 @@
 import React, { FC } from 'react';
 
-import { Property, Entry, Language } from '../../api/types';
+import { Property, Entry } from '../../api/types';
 import { useQuery } from '../../api/useQuery';
-import { getEntryProperties, getEntry } from '../../api/client';
+import { getEntryProperties, getEntry, deleteEntry } from '../../api/client';
 import '../App.css';
 import EditEntryDialog from './EditEntryDialog';
 
 interface EntryDetailedProps {
-  selectedLang: Language;
-  entryId: string;
+  entry: Entry;
   onClose: () => void;
   openEdit: boolean;
   setOpenEdit: (open: boolean) => void;
+  onEditEntry: (entry: Entry) => void;
+  onDeleteEntry: (entry: Entry) => void;
 }
 
 const EntryDetailed: FC<EntryDetailedProps> = ({
-  selectedLang,
-  entryId,
+  entry,
   onClose,
   openEdit,
   setOpenEdit,
+  onEditEntry,
+  onDeleteEntry,
 }) => {
   const { data: defs } = useQuery<Property[]>(
-    () => getEntryProperties(entryId),
-    { deps: [entryId] },
+    () => getEntryProperties(entry.id),
+    { deps: [entry.id] },
   );
-  const { data: entry } = useQuery<Entry>(() => getEntry(entryId), {
-    deps: [entryId],
+  const { data: entryFull } = useQuery<Entry>(() => getEntry(entry.id), {
+    deps: [entry],
   });
-  if (entry === null) return <div />;
+  const handleDelete = async () => {
+    onClose();
+    const result = await deleteEntry(entry);
+    if (result) {
+      onDeleteEntry(result);
+    }
+  };
+  if (entryFull === null) return <div />;
   return (
     <div className='container entry-detailed '>
       <a className='topright'>
         <i
-          className='fa fa-pencil-square'
+          className='fas fa-edit'
+          style={{ marginRight: '4px' }}
           onClick={() => setOpenEdit(true)}
         ></i>
-        <i className='fas fa-window-close' onClick={onClose}></i>
+        <i
+          className='fas fa-trash-alt'
+          onClick={handleDelete}
+          style={{ marginRight: '4px' }}
+        ></i>
+        <i className='fas fa-times' onClick={onClose}></i>
       </a>
-      <span className='word-title'>{entry.original}</span>
-      <i>({entry.partOfSpeech})</i>
-      <div className='gender-letter gender-m'>M</div>
-      {entry.translation}
-      {Object.values(entry.customValues).map((val) => (
-        <p key={val.definition.id}>
-          <b>{val.definition.name}: </b>
-          {val.definition.type === 'text' && val.text}
-          {val.definition.type === 'single' &&
-            val.option &&
-            val.definition.options![val.option]}
+      <span className='word-title'>{entryFull.original}</span>
+      <div style={{ textAlign: 'left' }}>
+        <p>
+          {/* <div className='gender-letter gender-m'>M</div> */}
+          <i>({entryFull.partOfSpeech})</i>
+          <br />
+          <b>{entryFull.translation}</b>
         </p>
-      ))}
+        {Object.values(entryFull.customValues).map((val) => (
+          <p key={val.definition.id}>
+            <b>{val.definition.name}: </b>
+            {val.definition.type === 'text' && val.text}
+            {val.definition.type === 'single' &&
+              val.option &&
+              val.definition.options![val.option]}
+            {val.definition.type === 'multi' &&
+              val.options &&
+              val.options.map((opt) => val.definition.options![opt] + ' ')}
+          </p>
+        ))}
+      </div>
       {/* { defs && defs.map((def) => (console.log("FUCK", def))) }  */}
       {openEdit && (
-        <EditEntryDialog
-          selectedLang={selectedLang}
-          entry={entry}
-          onClose={() => setOpenEdit(false)}
-          defs={defs}
-          customValues={entry.customValues}
-          onAddEntry={() => console.log('onaddentry')}
-        />
+        <div style={{ textAlign: 'left' }}>
+          <EditEntryDialog
+            entry={entryFull}
+            onClose={() => setOpenEdit(false)}
+            defs={defs}
+            customValues={entryFull.customValues}
+            onEditEntry={onEditEntry}
+          />
+        </div>
       )}
     </div>
   );

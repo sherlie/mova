@@ -1,24 +1,48 @@
 import React, { useState, FC } from 'react';
 
-import { PartOfSpeech, Property } from '../../api/types';
-
+import {
+  PropertyType,
+  partOfSpeechLabel,
+  Property,
+  propertyTypeLabel,
+} from '../../api/types';
+import { updateProperty } from '../../api/client';
 import '../App.css';
+import { useMutation } from '../../api/useMutation';
+import { useLangSelector } from '../../store';
 
 interface PropetyDialogProps {
   property: Property;
   onClose: () => void;
 }
 
-const AddPropetyDialog: FC<PropetyDialogProps> = ({ property, onClose }) => {
+const EditPropetyDialog: FC<PropetyDialogProps> = ({ property, onClose }) => {
+  const selectedLang = useLangSelector();
   const [inputList, setInputList] = useState<string[]>(['']);
   const [name, setName] = useState<string>(property.name);
-  const [type, setType] = useState<string>(property.type);
-  const [pos, setPos] = useState(property.partOfSpeech.toString());
 
   const handleSubmit = async () => {
-    //await addProperty();
+    await editProperty();
     onClose();
   };
+
+  const [editProperty, { loading }] = useMutation(() =>
+    updateProperty(
+      {
+        name,
+        type: property.type,
+        langId: selectedLang!.id,
+        partOfSpeech: property.partOfSpeech,
+        options:
+          property.type === PropertyType['Single Option'] ||
+          property.type === PropertyType['Multi Option']
+            ? inputList
+            : undefined,
+        //table:  property.type === CustomType.Table ? inputList : undefined,
+      },
+      property.id,
+    ),
+  );
 
   const handleInputChange = (value: string, index: number) => {
     const list = [...inputList];
@@ -52,38 +76,27 @@ const AddPropetyDialog: FC<PropetyDialogProps> = ({ property, onClose }) => {
           />
         </p>
         <p>
-          <label>PROPERTY TYPE</label>
-          <br />
-          <select
-            className='basic-slide'
-            value={type}
-            onChange={(event) => {
-              setType(event.target.value);
-            }}
-          >
-            <option value='text'>text</option>
-            <option value='single'>single option</option>
-            <option value='multi'>multi option</option>
-            <option value='table'>table</option>
-          </select>
+          <label>PROPERTY TYPE: {propertyTypeLabel(property.type)}</label>
         </p>
         <p>
-          <label>PART OF SPEECH</label>
+          <label>
+            PART OF SPEECH: {partOfSpeechLabel(property.partOfSpeech)}
+          </label>
           <br />
-          <select
+          {/* <select
             className='basic-slide'
             onChange={(event) => setPos(event.target.value)}
-            defaultValue={pos}
+            value={pos}
           >
-            {Object.keys(PartOfSpeech).map((p) => (
-              <option className='option' key={p} value={p}>
-                {p}
+            {Object.entries(PartOfSpeech).map(([posName, posValue]) => (
+              <option className='option' key={posValue} value={posValue}>
+                {posName}
               </option>
             ))}
-          </select>
+          </select> */}
         </p>
-        {type === 'text' && <div />}
-        {(type === 'single' || type === 'multi') && (
+        {property.type === 'text' && <div />}
+        {(property.type === 'single' || property.type === 'multi') && (
           <div>
             <label>OPTIONS</label>
             {property.options &&
@@ -102,12 +115,14 @@ const AddPropetyDialog: FC<PropetyDialogProps> = ({ property, onClose }) => {
               })}
           </div>
         )}
-        <button className='confirm-button' onClick={() => handleSubmit()}>
-          CLOSE
-        </button>
+        <div style={{ textAlign: 'center' }}>
+          <button className='confirm-button' onClick={() => handleSubmit()}>
+            SUMBIT
+          </button>
+        </div>
       </dialog>
     </div>
   );
 };
 
-export default AddPropetyDialog;
+export default EditPropetyDialog;
