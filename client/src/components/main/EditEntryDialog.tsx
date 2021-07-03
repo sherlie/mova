@@ -181,7 +181,13 @@ const PropertyRow: FC<PropertyRowProps> = ({
             onPropValueChange({ option: event.target.value });
           }}
           value={propValue?.option}
+          defaultValue={propValue ? propValue.option : ''}
         >
+          {!propValue && (
+            <option value='' disabled hidden>
+              ---
+            </option>
+          )}
           {Object.entries(prop.options).map(([key, opt]) => (
             <option key={key} value={key}>
               {opt}

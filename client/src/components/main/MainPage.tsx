@@ -61,19 +61,6 @@ const MainPage: FC = () => {
   return (
     <div>
       <h3>Main Page</h3>
-      <div className='search-container'>
-        <form action=''>
-          <input
-            type='text'
-            placeholder='Search...'
-            name='search'
-            className='search-input'
-          />
-          <button type='submit' className='search-submit '>
-            <i className='fa fa-search'></i>
-          </button>
-        </form>
-      </div>
 
       <div className='grid-container-2-equal'>
         <div className='grid-item'>
