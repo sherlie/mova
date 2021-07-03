@@ -38,9 +38,9 @@ main {
     margin: 0;
   }
   .right-fixed-position {
-    position: 'fixed';
+    /* position: 'fixed';
     left: '49%';
-    width: '45%';
+    width: '45%'; */
   }
 }
 
@@ -72,10 +72,7 @@ main {
     flex-direction: column;
   }
   .right-fixed-position {
-    position: 'fixed';
-    left: '49%';
-    width: '45%';
-    margin-left: '2rem';
+    margin-left: 2.5rem;
   }
   /* .navbar:hover .logo svg
   {
@@ -87,6 +84,12 @@ main {
     left: 0px;
   } */
 }
+.right-fixed-position {
+  position: fixed;
+  left: 49%;
+  width: 45%;
+}
+
 .basic-slide {
   display: inline-block;
   /* width: min(215px, 100%); */
