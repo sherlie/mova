@@ -43,13 +43,13 @@ const EntryDetailed: FC<EntryDetailedProps> = ({
       <a className='topright'>
         <i
           className='fas fa-edit'
-          style={{ marginRight: '2px' }}
+          style={{ marginRight: '4px' }}
           onClick={() => setOpenEdit(true)}
         ></i>
         <i
           className='fas fa-trash-alt'
           onClick={handleDelete}
-          style={{ marginRight: '2px' }}
+          style={{ marginRight: '4px' }}
         ></i>
         <i className='fas fa-times' onClick={onClose}></i>
       </a>
@@ -76,13 +76,15 @@ const EntryDetailed: FC<EntryDetailedProps> = ({
       </div>
       {/* { defs && defs.map((def) => (console.log("FUCK", def))) }  */}
       {openEdit && (
-        <EditEntryDialog
-          entry={entryFull}
-          onClose={() => setOpenEdit(false)}
-          defs={defs}
-          customValues={entryFull.customValues}
-          onEditEntry={onEditEntry}
-        />
+        <div style={{ textAlign: 'left' }}>
+          <EditEntryDialog
+            entry={entryFull}
+            onClose={() => setOpenEdit(false)}
+            defs={defs}
+            customValues={entryFull.customValues}
+            onEditEntry={onEditEntry}
+          />
+        </div>
       )}
     </div>
   );

@@ -30,12 +30,14 @@ const PropertiesPage: FC = () => {
   return (
     <div>
       <h3>Properties of {selectedLang.name}</h3>
-      <h4>Noun</h4>
       <div className='grid-container-2-equal'>
         <div className='grid-item'>
           {properties &&
             properties.map((property) => (
-              <div className='entry-row grid-item' key={property.id}>
+              <div
+                className='entry-row row-regular grid-item'
+                key={property.id}
+              >
                 <a onClick={() => setOpenedProperty(property)}>
                   <div>{property.name}</div>
                 </a>

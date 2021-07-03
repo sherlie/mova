@@ -51,16 +51,18 @@ const LangSelectDialog: FC<LangSelectDialogProps> = ({ onClose }) => {
             </option>
           ))}
         </select>
-        <button
-          onClick={() => {
-            dispatch(select(selectedLang!));
-            onClose();
-          }}
-          className='confirm-button'
-          disabled={!selectedLang}
-        >
-          OK
-        </button>
+        <div style={{ textAlign: 'center' }}>
+          <button
+            onClick={() => {
+              dispatch(select(selectedLang!));
+              onClose();
+            }}
+            className='confirm-button'
+            disabled={!selectedLang}
+          >
+            OK
+          </button>
+        </div>
       </dialog>
     </div>
   );

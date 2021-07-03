@@ -102,9 +102,11 @@ const AddEntryDialog: FC<AddEntryDialogProps> = ({ onAddEntry, onClose }) => {
             }
           />
         </div>
-        <button className='confirm-button' onClick={() => handleSubmit()}>
-          SUBMIT
-        </button>
+        <div style={{ textAlign: 'center' }}>
+          <button className='confirm-button' onClick={() => handleSubmit()}>
+            SUBMIT
+          </button>
+        </div>
       </dialog>
     </div>
   );

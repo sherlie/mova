@@ -115,9 +115,11 @@ const EditPropetyDialog: FC<PropetyDialogProps> = ({ property, onClose }) => {
               })}
           </div>
         )}
-        <button className='confirm-button' onClick={() => handleSubmit()}>
-          SUMBIT
-        </button>
+        <div style={{ textAlign: 'center' }}>
+          <button className='confirm-button' onClick={() => handleSubmit()}>
+            SUMBIT
+          </button>
+        </div>
       </dialog>
     </div>
   );

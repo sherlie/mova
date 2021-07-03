@@ -111,9 +111,11 @@ const EditEntryDialog: FC<EditEntryDialogProps> = ({
             />
           </div>
         )}
-        <button className='confirm-button' onClick={() => handleSubmit()}>
-          SUBMIT
-        </button>
+        <div style={{ textAlign: 'center' }}>
+          <button className='confirm-button' onClick={() => handleSubmit()}>
+            SUBMIT
+          </button>
+        </div>
       </dialog>
     </div>
   );
@@ -168,6 +170,7 @@ const PropertyRow: FC<PropertyRowProps> = ({
     onPropValueChange({ options: newOptions });
   };
 
+  if (!prop) return <div />;
   return (
     <div>
       <label className='label'>{prop.name.toUpperCase()}</label> <br />
@@ -193,7 +196,7 @@ const PropertyRow: FC<PropertyRowProps> = ({
               <input
                 value={key}
                 type='checkbox'
-                checked={propValue.options?.includes(key)}
+                checked={propValue && propValue.options?.includes(key)}
                 className='basic-slide'
                 onChange={(event) => {
                   handleMultiOptionChange(event.target.value);

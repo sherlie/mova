@@ -156,9 +156,11 @@ const AddPropetyDialog: FC<PropetyDialogProps> = ({ onClose }) => {
             })}
           </div>
         )}
-        <button className='confirm-button' onClick={() => handleSubmit()}>
-          {loading ? '...' : 'SUBMIT'}
-        </button>
+        <div style={{ textAlign: 'center' }}>
+          <button className='confirm-button' onClick={() => handleSubmit()}>
+            {loading ? '...' : 'SUBMIT'}
+          </button>
+        </div>
       </dialog>
     </div>
   );
