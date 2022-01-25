@@ -3,6 +3,7 @@
   font-family: 'Open Sans';
   --light: #ccc;
   --secondary: #b28ed8;
+  --light-secondary: #d6cbe0;
   --dark: #333;
 }
 
@@ -404,4 +405,73 @@ img {
   width: 100%;
   height: auto;
   opacity: 0.3;
+}
+
+.flashcard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: #f2f2f2;
+  width: 30rem;
+  height: 20rem;
+  border-radius: 1rem;
+  font-weight: 800;
+  font-size: 2rem;
+  color: var(--dark);
+}
+
+.card-container {
+  width: 30rem;
+  height: 20rem;
+  border-radius: 1rem;
+  perspective: 200rem;
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+  transition: transform 1s;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  position: relative;
+}
+
+.card.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.card-side {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-weight: 800;
+  font-size: 2rem;
+  color: var(--dark);
+}
+
+.card-side--front {
+  border-radius: 1rem;
+  background-image: linear-gradient(
+    to bottom right,
+    var(--light),
+    var(--secondary)
+  );
+}
+
+.card-side--back {
+  border-radius: 1rem;
+  background-image: linear-gradient(
+    to bottom right,
+    var(--light),
+    var(--light-secondary)
+  );
+  transform: rotateY(180deg);
 }
