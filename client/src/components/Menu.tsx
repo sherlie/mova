@@ -18,7 +18,7 @@ const Menu: FC<MenuProps> = ({ setOpen }) => {
           </a>
         </li>
         <li key='properties' className='navbar-item'>
-          <a href='/languages' className='navbar-link'>
+          <a href='/properties' className='navbar-link'>
             <i className='fas fa-puzzle-piece navbar-icon'></i>
             <span className='navbar-text'>Properties</span>
           </a>
@@ -29,8 +29,14 @@ const Menu: FC<MenuProps> = ({ setOpen }) => {
             <span className='navbar-text'>Language</span>
           </a>
         </li>
+        <li key='cards' className='navbar-item'>
+          <a href='/cards' className='navbar-link'>
+            <i className='fas fa-th-large'></i>
+            <span className='navbar-text'>Cards</span>
+          </a>
+        </li>
         <li key='settings' className='navbar-item'>
-          <a className='navbar-link'>
+          <a href='/settings' className='navbar-link'>
             <i className='fa fa-cogs' aria-hidden='true'></i>
             <span className='navbar-text'>Settings</span>
           </a>
