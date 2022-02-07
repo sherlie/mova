@@ -492,3 +492,60 @@ img {
 .card-width {
   width: 30rem;
 }
+
+.switch-container {
+  display: flex;
+  align-items: center;
+}
+
+.switch {
+  position: relative;
+  display: flex;
+  width: 4rem;
+  height: 2rem;
+}
+
+.switch[type='checkbox'] {
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.switch-label {
+  padding: 0.5rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.slider {
+  cursor: pointer;
+  width: 4rem;
+  height: 2rem;
+  background-color: var(--light-secondary);
+  display: block;
+  border-radius: 1rem;
+  position: absolute;
+}
+
+.slider:after {
+  content: '';
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: #fff;
+  border-radius: 1rem;
+  transition: 0.3s;
+}
+
+input:checked + .slider {
+  background: var(--secondary);
+  transition: 0.3s;
+}
+
+input:checked + .slider:after {
+  left: calc(100% - 1.75rem);
+  transition: 0.3s;
+}

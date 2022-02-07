@@ -5,6 +5,7 @@ import { useQuery } from '../../api/useQuery';
 import { useLangSelector } from '../../store';
 import '../App.css';
 import Card from './Card';
+import SwitchOrder from './SwitchOrder';
 
 const CardsPage: FC = () => {
   const selectedLang = useLangSelector();
@@ -18,6 +19,14 @@ const CardsPage: FC = () => {
     if (selectedIdx > 0) {
       setSelectedIdx(selectedIdx - 1);
     }
+  }
+
+  function hasLefter() {
+    return selectedIdx > 0;
+  }
+
+  function hasRighter() {
+    return lastPage > selectedIdx + 1 || entriesPage?.hasMore;
   }
 
   function handleRight() {
@@ -45,8 +54,9 @@ const CardsPage: FC = () => {
     }
   }, [entriesPage]);
 
-  const [flipped, setFlipped] = useState(false);
   const [reverse, setReverse] = useState(false);
+
+  console.log(hasLefter(), hasRighter());
 
   if (!selectedEntry) {
     return null;
@@ -59,13 +69,19 @@ const CardsPage: FC = () => {
 
         <div>
           <div className='center'>
-            <a onClick={() => handleLeft()}>
+            <a
+              onClick={() => handleLeft()}
+              style={{ opacity: hasLefter() ? '100%' : '0%' }}
+            >
               <i
                 className='fa fa-long-arrow-left arrow-icon fa-3x'
                 aria-hidden='true'
               />
             </a>
-            <a onClick={() => handleRight()}>
+            <a
+              onClick={() => handleRight()}
+              style={{ opacity: hasRighter() ? '100%' : '0%' }}
+            >
               <i
                 className='fa fa-long-arrow-right arrow-icon fa-3x'
                 aria-hidden='true'
@@ -74,16 +90,7 @@ const CardsPage: FC = () => {
           </div>
         </div>
 
-        <div>
-          <input
-            type='checkbox'
-            checked={reverse}
-            onChange={() => setReverse(!reverse)}
-          />
-          <label className='switch'>
-            <span className='slider'> SHOW TRANSLATION FIRST</span>
-          </label>
-        </div>
+        <SwitchOrder reverse={reverse} setReverse={setReverse} />
       </div>
     </>
   );
